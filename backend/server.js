@@ -1,12 +1,12 @@
+require('dotenv').config({ path: '../.env'})
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
-const uri = "mongodb+srv://jadsaad:jadsaad@bond-messaging-app.txvyv.mongodb.net/?retryWrites=true&w=majority&appName=Bond-Messaging-App"
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
+const uri = process.env.DB_KEY
 
 app.use(bodyParser.json());
 app.use(cors());
