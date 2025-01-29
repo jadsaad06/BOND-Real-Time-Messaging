@@ -1,0 +1,61 @@
+/* Basic styles for the instant messaging app */
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .header {
+    text-align: center;
+    background-color: #0084FF;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .messages-container {
+    margin-top: 20px;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .message {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #e5e5e5;
+    border-radius: 5px;
+  }
+  
+  .input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .message-input {
+    width: 80%;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .send-button {
+    padding: 8px 16px;
+    background-color: #0084FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .send-button:hover {
+    background-color: #005bb5;
+  }
