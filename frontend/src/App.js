@@ -16,32 +16,34 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <div className="header">
-        <h1>Instant Messaging</h1>
-      </div>
-
-      <div className="messages-container">
-        {messages.map(msg => (
-          <div key={msg.id} className="message">
-            {msg.text}
+        <div className='container'>
+          <div className="app-container">
+            <div className="header">
+              <h1>Instant Messaging</h1>
+            </div>
+      
+            <div className="messages-container">
+              {messages.map(msg => (
+                <div key={msg.id} className="message">
+                  {msg.text}
+                </div>
+              ))}
+            </div>
+      
+            <div className="input-container">
+              <input
+                type="text"
+                className="message-input"
+                placeholder="Type a message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <button onClick={handleSendMessage} className="send-button">
+                Send
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
-
-      <div className="input-container">
-        <input
-          type="text"
-          className="message-input"
-          placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <button onClick={handleSendMessage} className="send-button">
-          Send
-        </button>
-      </div>
-    </div>
+        </div>
   );
 }
 

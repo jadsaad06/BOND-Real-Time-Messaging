@@ -1,6 +1,17 @@
 /* Basic styles for the instant messaging app */
-
+.container{
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: #4A90E2;
+  
+}
 .app-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background-color: #4A90E2;
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
