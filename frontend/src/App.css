@@ -1,72 +1,53 @@
 /* Basic styles for the instant messaging app */
-.container{
+.main-container {
   display: flex;
-  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  background-image: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(42, 25, 104) 50%, rgba(132, 45, 204, 0.5) 100%);
+  color: white;
+  padding: 10px;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+}
+
+.profile-button {
+  display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  background-color: #4A90E2;
-  
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  border-width: 0;
+  opacity: 1;
+  background-color: transparent;
 }
-.app-container {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    background-color: #4A90E2;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 10px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .header {
-    text-align: center;
-    background-color: #0084FF;
-    padding: 10px;
-    color: white;
-    border-radius: 5px;
-  }
-  
-  .messages-container {
-    margin-top: 20px;
-    background-color: #f4f4f4;
-    padding: 10px;
-    border-radius: 5px;
-    max-height: 400px;
-    overflow-y: auto;
-  }
-  
-  .message {
-    padding: 10px;
-    margin-bottom: 5px;
-    background-color: #e5e5e5;
-    border-radius: 5px;
-  }
-  
-  .input-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-  }
-  
-  .message-input {
-    width: 80%;
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .send-button {
-    padding: 8px 16px;
-    background-color: #0084FF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .send-button:hover {
-    background-color: #005bb5;
-  }
+
+.pfp {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.title-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin-right: 10px;
+}
+
+.settings-icon {
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 10px;
+}
