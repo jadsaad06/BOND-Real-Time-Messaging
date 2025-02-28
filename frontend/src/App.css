@@ -1,12 +1,34 @@
-/* Basic styles for the instant messaging app */
+html, body, #root, .App {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* More dynamic gradient with subtle animation */
+  background: linear-gradient(-45deg, #5209db, #844fd8, #5e30a3, #7a2cc8);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .main-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
-  background-image: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(42, 25, 104) 50%, rgba(132, 45, 204, 0.5) 100%);
   color: white;
-  padding: 10px;
+  padding: 15px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .profile-container {
@@ -19,35 +41,89 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 15px;
+  border-radius: 12px;
   color: white;
-  border-width: 0;
-  opacity: 1;
-  background-color: transparent;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.profile-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .pfp {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  margin-right: 10px;
-}
-
-.title-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
+  margin-right: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .title {
-  margin-right: 10px;
+  margin-right: 15px;
+  font-weight: 600;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .settings-icon {
   font-size: 24px;
   cursor: pointer;
-  margin-right: 10px;
+  margin-right: 15px;
+  transition: transform 0.3s ease;
+}
+
+.settings-icon:hover {
+  transform: rotate(45deg);
+}
+
+.app-body-container {
+  display: flex;
+  flex: 1;
+  height: calc(100% - 70px);
+  padding: 10px;
+}
+
+.sidebar {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  width: 220px;
+  height: 100%;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  margin-right: 15px;
+}
+
+.chat-container {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+}
+
+.chats-title {
+  transform: translateX(-50%);
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }

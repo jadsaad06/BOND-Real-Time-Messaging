@@ -11,11 +11,19 @@ function App() {
             <h2>James Bond</h2>
           </button>
         </profile>
-        <div className="title-container">
           <h1 className='title'>Bond</h1>
-        </div>
-        <FaCog className="settings-icon" />
+          <FaCog className="settings-icon" />
       </header>
+      <div className="app-body-container">
+        <sidebar className="sidebar">
+          <h1 className="sidebar-title">Friends</h1>
+        </sidebar>
+        <div className="chat-container">
+          <chats>
+            <h1 className="chats-title">Chats</h1>
+          </chats>
+        </div>
+      </div>
     </div>
   );
 }
