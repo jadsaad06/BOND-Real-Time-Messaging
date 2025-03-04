@@ -1,7 +1,11 @@
 import './App.css';
 import { FaCog, FaPlus } from 'react-icons/fa';
 
+
+
 function App() {
+
+
   return (
     <div className="App">
       <header className="main-container">
@@ -18,7 +22,9 @@ function App() {
         <sidebar className="sidebar">
           <div className="friends-header">
             <h1 className="sidebar-title">Friends</h1>
-            <FaPlus className="add-friend-icon" />
+            <button className="add-friend-container">
+              <FaPlus className="add-friend-icon" />
+            </button>
           </div>
         </sidebar>
         <div className="chat-container">
@@ -26,22 +32,22 @@ function App() {
             <h1 className="chats-title">Chats</h1>
           </chats>
           <div className="message-container">
-            <div className="message">
+            <div className="message-sent">
               <p className="message-text">Hello!</p>
             </div>
-            <div className="message">
+            <div className="message-received">
               <p className="message-text">Hi!</p>
             </div>
-            <div className="message">
+            <div className="message-sent">
               <p className="message-text">How are you?</p>
             </div>
-            <div className="message">
+            <div className="message-received">
               <p className="message-text">Good, you?</p>
             </div>
-            <div className="message">
+            <div className="message-sent">
               <p className="message-text">I'm good too!</p>
             </div>
-            <div className="message">
+            <div className="message-received">
               <p className="message-text">That's great!</p>
             </div>
           </div>

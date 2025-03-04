@@ -148,7 +148,9 @@ html, body, #root, .App {
   padding: 10px;
 }
 
-.message {
+
+
+.message-sent{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -162,6 +164,19 @@ html, body, #root, .App {
   margin-bottom: 8px;
 }
 
+.message-received{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-end;
+  padding: 10px;
+  border-radius: 12px;
+  color: white;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 8px;
+}
 .message-input-container {
   margin-top: 10px;
   padding: 10px;
@@ -202,6 +217,16 @@ html, body, #root, .App {
   justify-content: space-around;
   gap: 10px;
   margin-bottom: 20px;
+}
+
+.add-friend-container{
+  background: none;
+  color: white;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 .add-friend-icon {
