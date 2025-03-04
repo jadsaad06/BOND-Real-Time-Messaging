@@ -22,6 +22,30 @@ function App() {
           <chats>
             <h1 className="chats-title">Chats</h1>
           </chats>
+          <div className="message-container">
+            <div className="message">
+              <p className="message-text">Hello!</p>
+            </div>
+            <div className="message">
+              <p className="message-text">Hi!</p>
+            </div>
+            <div className="message">
+              <p className="message-text">How are you?</p>
+            </div>
+            <div className="message">
+              <p className="message-text">Good, you?</p>
+            </div>
+            <div className="message">
+              <p className="message-text">I'm good too!</p>
+            </div>
+            <div className="message">
+              <p className="message-text">That's great!</p>
+            </div>
+          </div>
+          <div className="message-input-container">
+            <input className="message-input" placeholder="Type a message..." />
+            <button className="send-button">Send</button>
+          </div>
         </div>
       </div>
     </div>

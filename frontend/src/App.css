@@ -1,11 +1,11 @@
 html, body, #root, .App {
-  height: 100%;
+  height: 100vh;
   margin: 0;
   padding: 0;
-  /* More dynamic gradient with subtle animation */
   background: linear-gradient(-45deg, #5209db, #844fd8, #5e30a3, #7a2cc8);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
+  overflow: hidden;
 }
 
 @keyframes gradient {
@@ -21,12 +21,13 @@ html, body, #root, .App {
 }
 
 .main-container {
+  height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   color: white;
-  padding: 15px;
+  padding: 10px;
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -82,20 +83,18 @@ html, body, #root, .App {
 
 .app-body-container {
   display: flex;
-  flex: 1;
-  height: calc(100% - 70px);
-  padding: 10px;
+  height: calc(100vh - 100px); 
+  padding: 5px;
+  margin: 0 20px;
 }
 
 .sidebar {
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  width: 220px;
-  height: 100%;
+  padding: 15px;
+  width: 200px;
+  max-height: calc(100vh - 120px);
   border: none;
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
@@ -104,15 +103,21 @@ html, body, #root, .App {
   margin-right: 15px;
 }
 
+.sidebar-title {
+  align-self: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 .chat-container {
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
+  padding: 15px;
   flex: 1;
-  height: 100%;
+  max-height: calc(100vh - 120px);
   border: none;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -121,9 +126,61 @@ html, body, #root, .App {
 }
 
 .chats-title {
-  transform: translateX(-50%);
+  align-self: flex-start;
   font-weight: 600;
   letter-spacing: 1px;
   margin-bottom: 20px;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+  padding: 10px;
+}
+
+.message {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  color: white;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.message-input-container {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.message-input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.send-button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
 }
