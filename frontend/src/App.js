@@ -53,7 +53,7 @@ function App() {
               ))}
         </div>
           <div className="message-input-container">
-            <input className="message-input" placeholder="Type a message..." onChange={(e) => setCurrMessage(e.target.value)} />
+            <input className="message-input" placeholder="Type a message..." value={currMessage} onChange={(e) => setCurrMessage(e.target.value)} />
             <button className="send-button" onClick={handleSendMessage}>Send</button>
           </div>
         </div>
