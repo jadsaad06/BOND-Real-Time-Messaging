@@ -150,7 +150,7 @@ html, body, #root, .App {
 
 
 
-.message-sent{
+.message-received{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -164,7 +164,7 @@ html, body, #root, .App {
   margin-bottom: 8px;
 }
 
-.message-received{
+.message-sent{
   display: flex;
   flex-direction: row;
   justify-content: space-between;

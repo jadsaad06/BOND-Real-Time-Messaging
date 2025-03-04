@@ -1,11 +1,28 @@
+import { useState } from 'react';
 import './App.css';
 import { FaCog, FaPlus } from 'react-icons/fa';
 
 
-
 function App() {
-
-
+  const [messages, setMessages] = useState([
+    { text: 'Hello!', type: 'sent' },
+    { text: 'Hi!', type: 'received' },
+    { text: 'How are you?', type: 'sent' },
+    { text: 'Good, you?', type: 'received' },
+    { text: "I'm good too!", type: 'sent' },
+    { text: "That's great!", type: 'received' }
+  ]);
+  
+  const [currMessage, setCurrMessage] = useState('');
+  
+  const handleSendMessage = () => {
+    if (currMessage.trim()) {
+      setMessages([...messages, { text: currMessage, type: 'sent' }]);
+      setCurrMessage(''); // Reset input
+    }
+  };
+  
+  
   return (
     <div className="App">
       <header className="main-container">
@@ -28,37 +45,21 @@ function App() {
           </div>
         </sidebar>
         <div className="chat-container">
-          <chats>
-            <h1 className="chats-title">Chats</h1>
-          </chats>
-          <div className="message-container">
-            <div className="message-sent">
-              <p className="message-text">Hello!</p>
-            </div>
-            <div className="message-received">
-              <p className="message-text">Hi!</p>
-            </div>
-            <div className="message-sent">
-              <p className="message-text">How are you?</p>
-            </div>
-            <div className="message-received">
-              <p className="message-text">Good, you?</p>
-            </div>
-            <div className="message-sent">
-              <p className="message-text">I'm good too!</p>
-            </div>
-            <div className="message-received">
-              <p className="message-text">That's great!</p>
-            </div>
-          </div>
+        <div className="message-container">
+          {messages.map((message, index) => (
+                <div key={index} className={`message-${message.type}`}>
+                  <p className="message-text">{message.text}</p>
+                </div>
+              ))}
+        </div>
           <div className="message-input-container">
-            <input className="message-input" placeholder="Type a message..." />
-            <button className="send-button">Send</button>
+            <input className="message-input" placeholder="Type a message..." onChange={(e) => setCurrMessage(e.target.value)} />
+            <button className="send-button" onClick={handleSendMessage}>Send</button>
           </div>
         </div>
       </div>
     </div>
-  );
+);
 }
 
 export default App;
