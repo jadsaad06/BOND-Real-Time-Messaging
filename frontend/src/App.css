@@ -27,14 +27,15 @@ html, body, #root, .App {
   align-items: center;
   position: relative;
   color: white;
-  padding: 10px;
+  padding: 10px 0px 10px 0px;
   backdrop-filter: blur(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0 20px;
 }
 
 .profile-container {
   display: flex;
   align-items: center;
+  margin-left: 10px;
 }
 
 .profile-button {
@@ -42,25 +43,26 @@ html, body, #root, .App {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  padding: 10px 15px;
   border-radius: 12px;
   color: white;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .profile-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
 
 .pfp {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   margin-right: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -83,9 +85,9 @@ html, body, #root, .App {
 
 .app-body-container {
   display: flex;
-  height: calc(100vh - 100px); 
+  height: calc(100vh - 120px); 
   padding: 5px;
-  margin: 0 20px;
+  margin: 0 20px 20px 20px; 
 }
 
 .sidebar {
@@ -94,13 +96,13 @@ html, body, #root, .App {
   flex-direction: column;
   padding: 15px;
   width: 200px;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 140px); 
   border: none;
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
-  margin-right: 15px;
+  margin: 0 15px 0 0; 
 }
 
 .sidebar-title {
@@ -117,12 +119,13 @@ html, body, #root, .App {
   flex-direction: column;
   padding: 15px;
   flex: 1;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 140px); 
   border: none;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   border-radius: 15px;
+  margin: 0; 
 }
 
 .chats-title {
@@ -176,11 +179,37 @@ html, body, #root, .App {
   color: white;
 }
 
+.message-input::placeholder {
+  color: rgb(189, 182, 182);
+}
+
+.message-input:focus {
+  outline: none;
+}
+
 .send-button {
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(158, 154, 154, 0.2);
   color: white;
   cursor: pointer;
+}
+
+.friends-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.add-friend-icon {
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.add-friend-icon:hover {
+  transform: rotate(90deg);
 }

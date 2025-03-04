@@ -1,5 +1,5 @@
 import './App.css';
-import { FaCog } from 'react-icons/fa';
+import { FaCog, FaPlus } from 'react-icons/fa';
 
 function App() {
   return (
@@ -16,7 +16,10 @@ function App() {
       </header>
       <div className="app-body-container">
         <sidebar className="sidebar">
-          <h1 className="sidebar-title">Friends</h1>
+          <div className="friends-header">
+            <h1 className="sidebar-title">Friends</h1>
+            <FaPlus className="add-friend-icon" />
+          </div>
         </sidebar>
         <div className="chat-container">
           <chats>
