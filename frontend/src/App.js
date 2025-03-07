@@ -31,10 +31,18 @@ function App() {
   
   const toggleSettings = () => {
     setShowSettings(!showSettings);
+
+    if(showProfile){
+      setShowProfile(!showProfile);
+    }
   }
 
   const toggleProfile = () => {
     setShowProfile(!showProfile);
+
+    if(showSettings){
+      setShowSettings(!showSettings);
+    }
   };
 
   const handleLogout = () => {
