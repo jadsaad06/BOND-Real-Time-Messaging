@@ -72,6 +72,12 @@ html, body, #root, .App {
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+.settings-button{
+  color: white;
+  background: transparent;
+  border: none;
+}
+
 .settings-icon {
   font-size: 24px;
   cursor: pointer;

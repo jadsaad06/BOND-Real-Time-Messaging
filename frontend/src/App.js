@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import './settings.css'
 import { FaCog, FaPlus } from 'react-icons/fa';
 
 
@@ -14,6 +15,8 @@ function App() {
   ]);
   
   const [currMessage, setCurrMessage] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  
   
   const handleSendMessage = () => {
     if (currMessage.trim()) {
@@ -22,6 +25,9 @@ function App() {
     }
   };
   
+  const toggleSettings = () => {
+    setShowSettings(!showSettings);
+  }
   
   return (
     <div className="App">
@@ -33,9 +39,26 @@ function App() {
           </button>
         </profile>
           <h1 className='title'>Bond</h1>
-          <FaCog className="settings-icon" />
+          <button className="settings-button" onClick={toggleSettings}>
+            <FaCog className="settings-icon" />
+          </button>
       </header>
       <div className="app-body-container">
+        {showSettings && (
+          <div className="settings-container">
+            <h1 className="settings-title">Settings</h1>
+            <div className="settings-content">
+              <div className="setting">
+                <h2>Dark Mode</h2>
+                <input type="checkbox" />
+              </div>
+              <div className="setting">
+                <h2>Notifications</h2>
+                <input type="checkbox" />
+              </div>
+            </div>
+          </div>
+          )}
         <sidebar className="sidebar">
           <div className="friends-header">
             <h1 className="sidebar-title">Friends</h1>
