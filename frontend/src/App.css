@@ -73,9 +73,13 @@ html, body, #root, .App {
 }
 
 .settings-button{
-  color: white;
-  background: transparent;
+  background-color: transparent;
   border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
 }
 
 .settings-icon {

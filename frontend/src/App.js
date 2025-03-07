@@ -39,8 +39,8 @@ function App() {
           </button>
         </profile>
           <h1 className='title'>Bond</h1>
-          <button className="settings-button" onClick={toggleSettings}>
-            <FaCog className="settings-icon" />
+          <button className="settings-button">
+            <FaCog className="settings-icon" onClick={toggleSettings}/>
           </button>
       </header>
       <div className="app-body-container">
@@ -49,12 +49,16 @@ function App() {
             <h1 className="settings-title">Settings</h1>
             <div className="settings-content">
               <div className="setting">
-                <h2>Dark Mode</h2>
-                <input type="checkbox" />
+                <h2>Change Email</h2>
               </div>
               <div className="setting">
-                <h2>Notifications</h2>
-                <input type="checkbox" />
+                <h2>Change Password</h2>
+              </div>
+              <div className="setting">
+                <h2>Edit Block List</h2>
+              </div>
+              <div className="setting">
+                <h2>2 Factor Authentication</h2>
               </div>
             </div>
           </div>
