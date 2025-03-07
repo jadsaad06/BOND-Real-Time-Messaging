@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './App.css';
-import './settings.css'
-import { FaCog, FaPlus } from 'react-icons/fa';
-
+import './settings.css';
+import './profile.css';
+import { FaCog, FaPlus, FaSignOutAlt, FaUserEdit } from 'react-icons/fa';
 
 function App() {
   const [messages, setMessages] = useState([
@@ -16,8 +16,10 @@ function App() {
   
   const [currMessage, setCurrMessage] = useState('');
   const [showSettings, setShowSettings] = useState(false);
-  
-  
+  const [showProfile, setShowProfile] = useState(false);
+  const [displayName, setDisplayName] = useState('James Bond');
+  const [profilePic, setProfilePic] = useState('https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg');
+
   const handleSendMessage = () => {
     if (currMessage.trim()) {
       setMessages([...messages, { text: currMessage, type: 'sent' }]);
@@ -28,14 +30,23 @@ function App() {
   const toggleSettings = () => {
     setShowSettings(!showSettings);
   }
-  
+
+  const toggleProfile = () => {
+    setShowProfile(!showProfile);
+  };
+
+  const handleLogout = () => {
+    // Add logout logic here
+    console.log('Logging out...');
+  };
+
   return (
     <div className="App">
       <header className="main-container">
         <profile className="profile-container">
-          <button className="profile-button">
-            <img className="pfp" src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=" alt="Profile Picture" />
-            <h2>James Bond</h2>
+          <button className="profile-button" onClick={toggleProfile}>
+            <img className="pfp" src={profilePic} alt="Profile Picture" />
+            <h2>{displayName}</h2>
           </button>
         </profile>
           <h1 className='title'>Bond</h1>
@@ -44,6 +55,31 @@ function App() {
           </button>
       </header>
       <div className="app-body-container">
+        {showProfile && (
+          <div className="profile-modal">
+            <h1 className="profile-title">Profile Settings</h1>
+            <div className="profile-content">
+              <div className="profile-picture-section">
+                <img src={profilePic} alt="Profile" className="profile-preview" />
+                <button className="change-picture-btn">
+                  <FaUserEdit /> Change Picture
+                </button>
+              </div>
+              <div className="profile-setting">
+                <h2>Display Name</h2>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="profile-input"
+                />
+              </div>
+              <button className="logout-btn" onClick={handleLogout}>
+                <FaSignOutAlt /> Logout
+              </button>
+            </div>
+          </div>
+        )}
         {showSettings && (
           <div className="settings-container">
             <h1 className="settings-title">Settings</h1>
