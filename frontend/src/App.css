@@ -27,7 +27,7 @@ html, body, #root, .App {
   align-items: center;
   position: relative;
   color: white;
-  padding: 10px 0px 10px 0px;
+  padding: 10px 20px;
   backdrop-filter: blur(5px);
   margin: 0 20px;
 }
@@ -35,7 +35,7 @@ html, body, #root, .App {
 .profile-container {
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  width: 33.3%; /* Take up one-third of the space */
 }
 
 .profile-button {
@@ -49,12 +49,21 @@ html, body, #root, .App {
   border: 2px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  max-width: 100%; /* Prevent overflow */
+  overflow: hidden;
 }
 
 .profile-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+}
+
+.profile-button h2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px; /* Adjust this value as needed */
 }
 
 .pfp {
@@ -67,15 +76,24 @@ html, body, #root, .App {
 }
 
 .title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   margin-right: 15px;
   font-weight: 600;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .settings-button{
-  color: white;
-  background: transparent;
+  background-color: transparent;
   border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 33.3%; /* Take up one-third of the space */
 }
 
 .settings-icon {
@@ -150,39 +168,53 @@ html, body, #root, .App {
   flex: 1;
   width: 100%;
   overflow-y: auto;
-  max-height: calc(100vh - 250px);
   padding: 10px;
 }
 
-
-
 .message-received{
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-radius: 12px;
-  color: white;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-bottom: 8px;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 70%;
+  flex-direction: row-reverse;
+  margin-right: auto;
 }
 
 .message-sent{
   display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 70%;
   flex-direction: row;
-  justify-content: space-between;
-  align-self: flex-end;
-  padding: 10px;
-  border-radius: 12px;
-  color: white;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-bottom: 8px;
+  margin-left: auto;
 }
+
+.message-text {
+  padding: 10px 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  margin: 0;
+}
+
+.message-sent .message-text {
+  border-bottom-right-radius: 4px;
+}
+
+.message-received .message-text {
+  border-bottom-left-radius: 4px;
+}
+
+.message-sent .pfp,
+.message-received .pfp {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 .message-input-container {
   margin-top: 10px;
   padding: 10px;
