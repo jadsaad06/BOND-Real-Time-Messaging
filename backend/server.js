@@ -1,36 +1,26 @@
-require('dotenv').config({ path: '../.env' });
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const mongoose = require('mongoose');
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const uri = process.env.DB_KEY;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB (Persistent)
-mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("Connected to MongoDB"))
-.catch((err) => console.error("MongoDB connection error:", err));
+// Connect to MongoDB
+mongoose.connect(process.env.DB_KEY)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
-// Test Route
-app.get('/', (req, res) => {
-  res.send('Server is running...');
+// Define a simple API route
+app.get("/", (req, res) => {
+    res.send("API is running...");
 });
 
-// Placeholder for authentication routes
-app.use('/auth', require('./routes/authRoutes'));
-
-// Placeholder for messaging routes
-app.use('/messages', require('./routes/messageRoutes'));
-
+// Start the server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}.`);
+    console.log(`Server running on port ${PORT}`);
 });
