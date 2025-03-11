@@ -34,41 +34,69 @@
   flex-direction: column;
   align-items: center;
   gap: 15px;
+  margin-bottom: 20px;
 }
 
 .profile-preview {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
-.change-picture-btn, .logout-btn {
+.profile-preview:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.change-picture-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #4a2b7d, #5d3a96);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.change-picture-btn:hover {
+  background: linear-gradient(45deg, #5d3a96, #6b45ab);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(82, 9, 219, 0.2);
+}
+
+.change-picture-btn:active {
+  transform: translateY(0);
+}
+
+.change-picture-btn svg {
+  font-size: 1.2rem;
+}
+
+.logout-btn {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 15px;
   border-radius: 12px;
   border: 2px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 59, 59, 0.2);
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.change-picture-btn:hover, .logout-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.logout-btn {
-  background-color: rgba(255, 59, 59, 0.2);
   margin-top: 10px;
 }
 
 .logout-btn:hover {
   background-color: rgba(255, 59, 59, 0.3);
+  transform: translateY(-2px);
 }
 
 .profile-setting {

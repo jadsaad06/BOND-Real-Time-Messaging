@@ -10,6 +10,8 @@ import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus} from 'react-icons/fa';
 function MainApp({onLogout}) {
     const navigate = useNavigate(); 
     const messagesEndRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const [messages, setMessages] = useState([
       { text: 'Hello!', type: 'sent' },
@@ -111,6 +113,17 @@ function MainApp({onLogout}) {
         return;
       }
     }
+
+    const handleFileSelect = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setProfilePic(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
   
     return (
       <div className="App">
@@ -133,7 +146,17 @@ function MainApp({onLogout}) {
               <div className="profile-content">
                 <div className="profile-picture-section">
                   <img src={profilePic} alt="Profile" className="profile-preview" />
-                  <button className="change-picture-btn">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                  />
+                  <button 
+                    className="change-picture-btn"
+                    onClick={() => fileInputRef.current.click()}
+                  >
                     <FaUserEdit /> Change Picture
                   </button>
                 </div>
