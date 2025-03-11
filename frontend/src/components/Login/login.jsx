@@ -34,6 +34,9 @@ function Login({ onLogin }) {
         <button className="login-button" onClick={handleLogin}>
           Login
         </button>
+        <button className="login-button" onClick={() => navigate('/register')}>
+          Register
+        </button>
       </div>
     </div>
   );
