@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './components/Login/login';
 import MainApp from './components/MainApp/MainApp';
-import Register from './components/Register/register'; // Make sure to create this component
-
+import Register from './components/Register/register';
 function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  }
 
   return (
     <BrowserRouter>
@@ -22,7 +25,7 @@ function Router() {
         <Route path="/register" element={<Register />} />
         <Route path="/app" element={
           isAuthenticated ? 
-          <MainApp /> : 
+          <MainApp onLogout={handleLogout}/> : 
           <Navigate to="/" replace />
         } />
       </Routes>

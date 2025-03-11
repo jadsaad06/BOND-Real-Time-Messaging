@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus} from 'react-icons/fa';
 
 
-function MainApp() {
+function MainApp({onLogout}) { 
     const [messages, setMessages] = useState([
       { text: 'Hello!', type: 'sent' },
       { text: 'Hi!', type: 'received' },
@@ -69,8 +69,8 @@ function MainApp() {
     };
   
     const handleLogout = () => {
-      console.log('Logging out...');
-      navigate('/Login');
+      onLogout(); // Call onLogout function passed from Router
+      navigate('/'); // Navigate to login page
     };
   
     return (
