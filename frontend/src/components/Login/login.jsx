@@ -8,7 +8,13 @@ function Login({ onLogin }) {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    console.log('Logging in...');
+    if(!username || !password) {
+      alert('Please fill out all fields');
+      return;
+    }
+
+    // Check database for user
+
     onLogin();
     navigate('/app');
   };
