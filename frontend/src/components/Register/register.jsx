@@ -49,6 +49,9 @@ function Register() {
         <button className="login-button" onClick={handleRegister}>
           Register
         </button>
+        <button className="login-button" onClick={() => navigate('/')}>
+          Already have an account?
+        </button>
       </div>
     </div>
   );
