@@ -25,7 +25,7 @@ function Login({ onLogin }) {
       <div className="login-form">
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Email"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="login-input"
