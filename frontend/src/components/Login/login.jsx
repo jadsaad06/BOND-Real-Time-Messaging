@@ -1,33 +1,63 @@
 import React, { useState } from 'react';
 import './login.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login({ onLogin }) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if(!username || !password) {
-      alert('Please fill out all fields');
-      return;
+  const handleLogin = async () => {
+    try {
+      setError('');
+      
+      if (!email || !password) {
+        setError('Please fill out all fields');
+        return;
+      }
+
+      const response = await axios.post('http://localhost:5000/auth/login', {
+        email,
+        password
+      });
+
+      if (response.data) {
+        onLogin({
+          username: response.data.username,
+          friends: response.data.friends
+        });
+        navigate('/messages');
+      }
+    } catch (err) {
+      if (err.response) {
+        switch (err.response.status) {
+          case 404:
+            setError('User not found');
+            break;
+          case 400:
+            setError('Invalid credentials');
+            break;
+          default:
+            setError('Login failed. Please try again.');
+        }
+      } else {
+        setError('Network error. Please try again.');
+      }
     }
-
-    // Check database for user
-
-    onLogin();
-    navigate('/app');
   };
 
   return (
     <div className="login-container">
       <h1 className="login-title">Bond</h1>
       <div className="login-form">
+        {error && <div className="error-message">{error}</div>}
         <input
-          type="text"
+          type="email"
           placeholder="Email"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="login-input"
         />
         <input
