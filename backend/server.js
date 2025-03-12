@@ -2,6 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const authRoutes = require("./routes/authRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const Message = require("./models/message");
+const User = require("./models/user");
 
 const app = express();
 
@@ -9,14 +13,29 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB
+// MongoDB Connection with error handling
 mongoose.connect(process.env.DB_KEY)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch(err => console.error("MongoDB connection error:", err));
+  .then(() => {
+    console.log("Successfully connected to MongoDB.");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+    process.exit(1);
+  });
 
-// Define a simple API route
+// Routes
+app.use('/auth', authRoutes);
+app.use('/messages', messageRoutes);
+
+// Basic test route
 app.get("/", (req, res) => {
     res.send("API is running...");
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 
 // Start the server

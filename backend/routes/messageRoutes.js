@@ -1,5 +1,5 @@
 const express = require("express");
-const Message = require("./models/message"); // Import the Message model
+const Message = require("../models/message"); // Import the Message model
 const router = express.Router();
 
 // POST route to create a new message
