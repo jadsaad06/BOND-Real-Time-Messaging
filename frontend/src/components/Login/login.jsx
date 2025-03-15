@@ -11,39 +11,35 @@ function Login({ onLogin }) {
 
   const handleLogin = async () => {
     try {
-      setError('');
-      
-      if (!email || !password) {
-        setError('Please fill out all fields');
-        return;
-      }
-
-      console.log('Attempting login with:', { email }); // Debug log
-
-      const response = await axios.post('http://localhost:5000/auth/login', {
-        email,
-        password
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('Server response:', response.data); // Debug log
-
-      if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-
-        onLogin({
-          username: response.data.username,
-          friends: response.data.friends || []
-        });
+        setError('');
         
-        navigate('/messages');
-      } else {
-        setError('Invalid response from server');
-      }
+        if (!email || !password) {
+            setError('Please fill out all fields');
+            return;
+        }
+
+        const response = await axios.post('http://localhost:5000/auth/login', {
+            email,
+            password
+        });
+
+        if (response.data && response.data.token) {
+            // Store token
+            localStorage.setItem('token', response.data.token);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+            // Store user data
+            const userData = response.data.user;
+            console.log('User data:', userData);
+            localStorage.setItem('userData', JSON.stringify(userData));
+
+            // Pass user data to main app
+            onLogin(userData);
+            
+            navigate('/messages');
+        } else {
+            setError('Invalid response from server');
+        }
     } catch (err) {
       console.error('Login error details:', {
         message: err.message,

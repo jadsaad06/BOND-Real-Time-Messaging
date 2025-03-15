@@ -29,7 +29,6 @@ router.post('/register', async (req, res) => {
 // Route to login a user
 router.post('/login', async (req, res) => {
     try {
-        console.log('Login attempt:', req.body); // Debug log
 
         const { email, password } = req.body;
         
@@ -62,11 +61,10 @@ router.post('/login', async (req, res) => {
         res.json({
             token,
             user: {
-                id: user._id,
+                id: user._id.toString(),
                 username: user.username,
                 email: user.email,
                 friends: user.friends,
-                profilePicture: user.profilePicture
             }
         });
 
