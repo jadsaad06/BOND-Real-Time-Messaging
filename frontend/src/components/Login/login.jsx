@@ -18,32 +18,57 @@ function Login({ onLogin }) {
         return;
       }
 
+      console.log('Attempting login with:', { email }); // Debug log
+
       const response = await axios.post('http://localhost:5000/auth/login', {
         email,
         password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (response.data) {
+      console.log('Server response:', response.data); // Debug log
+
+      if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
         onLogin({
           username: response.data.username,
-          friends: response.data.friends
+          friends: response.data.friends || []
         });
+        
         navigate('/messages');
+      } else {
+        setError('Invalid response from server');
       }
     } catch (err) {
+      console.error('Login error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+
       if (err.response) {
         switch (err.response.status) {
           case 404:
-            setError('User not found');
+            setError(`User not found: ${err.response.data.message}`);
             break;
           case 400:
-            setError('Invalid credentials');
+            setError(`Invalid request: ${err.response.data.message}`);
+            break;
+          case 401:
+            setError(`Authentication failed: ${err.response.data.message}`);
             break;
           default:
-            setError('Login failed. Please try again.');
+            setError(`Login failed: ${err.response.data.message || 'Unknown error'}`);
         }
+      } else if (err.request) {
+        setError('No response from server. Check your connection.');
       } else {
-        setError('Network error. Please try again.');
+        setError(`Request failed: ${err.message}`);
       }
     }
   };

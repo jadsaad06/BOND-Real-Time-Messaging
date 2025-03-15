@@ -28,21 +28,47 @@ router.post('/register', async (req, res) => {
 
 // Route to login a user
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
     try {
+        console.log('Login attempt:', req.body); // Debug log
+
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
+        // Find user
         const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
+        // Verify password
         const isMatch = await user.comparePassword(password);
-        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
 
-        // Generate JWT
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        // Generate token
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
 
-        res.status(200).json({ message: "Login successful", token, user });
+        console.log('Login successful for:', email); // Debug log
+
+        // Send response
+        res.json({
+            token,
+            username: user.username,
+            friends: user.friends || [],
+            email: user.email
+        });
+
     } catch (error) {
-        res.status(500).json({ message: "Error logging in", error });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 });
 
