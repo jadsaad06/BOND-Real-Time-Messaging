@@ -93,3 +93,25 @@
   background: rgba(255, 255, 255, 0.15);
   transform: translateX(5px);
 }
+
+.search-result{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-pfp{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.add-friend-button{
+  padding: 5px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
