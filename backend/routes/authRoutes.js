@@ -121,4 +121,70 @@ router.get("/profile", authMiddleware, async (req, res) => {
     }
 });
 
+// PUT route to add/remove a friend
+router.put("/friends/:friendId", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get authenticated user's ID
+        const { friendId } = req.params;
+
+        // Prevent users from adding themselves
+        if (userId === friendId) {
+            return res.status(400).json({ message: "You cannot add yourself as a friend." });
+        }
+
+        const user = await User.findById(userId);
+        const friend = await User.findById(friendId);
+
+        if (!user || !friend) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Check if friend is already in the list
+        const isFriend = user.friends.includes(friendId);
+
+        if (isFriend) {
+            // Remove friend (Unfriend)
+            user.friends = user.friends.filter((id) => id.toString() !== friendId);
+            friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+        } else {
+            // Add friend
+            user.friends.push(friendId);
+            friend.friends.push(userId);
+        }
+
+        await user.save();
+        await friend.save();
+
+        res.json({ message: isFriend ? "Friend removed" : "Friend added", friends: user.friends });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating friends list", error });
+    }
+});
+
+// DELETE route to remove a friend
+router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get authenticated user's ID
+        const { friendId } = req.params;
+
+        const user = await User.findById(userId);
+        const friend = await User.findById(friendId);
+
+        if (!user || !friend) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Remove friend from both users' friend lists
+        user.friends = user.friends.filter((id) => id.toString() !== friendId);
+        friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+
+        await user.save();
+        await friend.save();
+
+        res.json({ message: "Friend removed successfully", friends: user.friends });
+    } catch (error) {
+        res.status(500).json({ message: "Error removing friend", error });
+    }
+});
+
 module.exports = router;
