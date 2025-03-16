@@ -76,10 +76,8 @@ router.post('/login', async (req, res) => {
 
 // Get all users (for adding friends)
 router.get("/users", async (req, res) => {
-    const username = req.body;
-
     try {
-        const users = await User.find(username).select("-password"); // Exclude password
+        const users = await User.find().select("-password"); // Exclude password
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: "Error fetching users", error });
@@ -94,12 +92,9 @@ router.get("/users/search", async (req, res) => {
         if (!searchQuery) {
             return res.status(400).json({ message: "Search query is required" });
         }
-
-        // Create a case-insensitive regex pattern that matches usernames starting with the search query
-        const regex = new RegExp(`^${searchQuery}`, 'i');
         
         const users = await User.find({ 
-            username: regex
+            username: searchQuery
         })
         .select("username email profilePicture")
         .limit(10); // Limit results to 10 users
