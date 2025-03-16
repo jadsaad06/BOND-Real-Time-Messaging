@@ -57,4 +57,143 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Get all users (for adding friends)
+router.get("/users", async (req, res) => {
+    const username = req.body;
+
+    try {
+        const users = await User.find(username).select("-password"); // Exclude password
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users", error });
+    }
+});
+
+// Search for users by username
+router.get("/users/search", async (req, res) => {
+    try {
+        const searchQuery = req.query.username;
+        
+        if (!searchQuery) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+
+        // Create a case-insensitive regex pattern that matches usernames starting with the search query
+        const regex = new RegExp(`^${searchQuery}`, 'i');
+        
+        const users = await User.find({ 
+            username: regex
+        })
+        .select("username email profilePicture")
+        .limit(10); // Limit results to 10 users
+
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error searching users", error });
+    }
+});
+
+// Get a single user by ID
+router.get("/users/:id", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select("-password");
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching user", error });
+    }
+});
+
+// Get friends
+router.get("/users/:id/friends", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate("friends", "username email");
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.status(200).json(user.friends);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching friends list", error });
+    }
+});
+
+// GET authenticated user's profile
+router.get("/profile", authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password"); // Exclude password from response
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching user profile", error });
+    }
+});
+
+// PUT route to add/remove a friend
+router.put("/friends/:friendId", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get authenticated user's ID
+        const { friendId } = req.params;
+
+        // Prevent users from adding themselves
+        if (userId === friendId) {
+            return res.status(400).json({ message: "You cannot add yourself as a friend." });
+        }
+
+        const user = await User.findById(userId);
+        const friend = await User.findById(friendId);
+
+        if (!user || !friend) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Check if friend is already in the list
+        const isFriend = user.friends.includes(friendId);
+
+        if (isFriend) {
+            // Remove friend (Unfriend)
+            user.friends = user.friends.filter((id) => id.toString() !== friendId);
+            friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+        } else {
+            // Add friend
+            user.friends.push(friendId);
+            friend.friends.push(userId);
+        }
+
+        await user.save();
+        await friend.save();
+
+        res.json({ message: isFriend ? "Friend removed" : "Friend added", friends: user.friends });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating friends list", error });
+    }
+});
+
+// DELETE route to remove a friend
+router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get authenticated user's ID
+        const { friendId } = req.params;
+
+        const user = await User.findById(userId);
+        const friend = await User.findById(friendId);
+
+        if (!user || !friend) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Remove friend from both users' friend lists
+        user.friends = user.friends.filter((id) => id.toString() !== friendId);
+        friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+
+        await user.save();
+        await friend.save();
+
+        res.json({ message: "Friend removed successfully", friends: user.friends });
+    } catch (error) {
+        res.status(500).json({ message: "Error removing friend", error });
+    }
+});
+
 module.exports = router;
