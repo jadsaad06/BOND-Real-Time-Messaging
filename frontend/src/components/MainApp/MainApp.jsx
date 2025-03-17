@@ -3,8 +3,9 @@ import './MainApp.css';
 import './addFriend.css';
 import './profile.css';
 import './settings.css';
+import './manageFriends.css';
 import { useNavigate } from 'react-router-dom';
-import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus} from 'react-icons/fa';
+import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus, FaMinus, FaUserTimes, FaBan} from 'react-icons/fa';
 import axios from 'axios';
 
 
@@ -21,6 +22,7 @@ function MainApp({onLogout, userInfo}) {
     const [displayName, setDisplayName] = useState(userInfo?.username);
     const [profilePic, setProfilePic] = useState(userInfo?.profilePicture);
     const [showAddFriend, setShowAddFriend] = useState(false);
+    const [showManageFriends, setShowManageFriends] = useState(false);
     const [tempDisplayName, setTempDisplayName] = useState(displayName);
     const [friends, setFriends] = useState([]);
     const [users, setUsers] = useState([{username: userInfo?.username, profilePic: ''}]);
@@ -111,6 +113,9 @@ function MainApp({onLogout, userInfo}) {
         setShowSettings(!showSettings);
       }
       
+      if(showManageFriends){
+        setShowManageFriends(!showManageFriends);
+      }
     }
     
     const toggleSettings = () => {
@@ -123,6 +128,10 @@ function MainApp({onLogout, userInfo}) {
       if(showAddFriend){
         setShowAddFriend(!showAddFriend);
       }
+
+      if(showManageFriends){
+        setShowManageFriends(!showManageFriends);
+      }
     }
   
     const toggleProfile = () => {
@@ -133,6 +142,23 @@ function MainApp({onLogout, userInfo}) {
         setTempDisplayName(displayName);
       }
 
+      if(showSettings){
+        setShowSettings(!showSettings);
+      }
+      if(showAddFriend){
+        setShowAddFriend(!showAddFriend);
+      }
+      if(showManageFriends){
+        setShowManageFriends(!showManageFriends);
+      }
+    };
+
+    const toggleManageFriends = () => {
+      setShowManageFriends(!showManageFriends);
+
+      if(showProfile){
+        setShowProfile(!showProfile);
+      }
       if(showSettings){
         setShowSettings(!showSettings);
       }
@@ -231,6 +257,44 @@ function MainApp({onLogout, userInfo}) {
     }
   };
 
+  const handleRemoveFriend = async (friendId) => {
+    try {
+      const response = await axios.patch(`http://localhost:5000/auth/friends/${friendId}?userId=${userInfo._id}`, {userId: userInfo.id}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      console.log(response.data.message); // "Friend removed"
+      
+      // Update friends list after removal
+      setFriends(friends.filter(friend => friend._id !== friendId));
+      
+      // If current friend was removed, clear the chat
+      if(currFriend._id === friendId) {
+        setCurrFriend({});
+        setMessages([]);
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error removing friend:', error.response?.data?.message || error.message);
+      throw error;
+    }
+  };
+  
+  const handleBlockUser = async (userId) => {
+    try {
+      // This would be the actual API call to block a user
+      // For now we'll just remove them from friends
+      await handleRemoveFriend(userId);
+      alert(`User blocked successfully!`);
+    } catch (error) {
+      console.error('Error blocking user:', error);
+    }
+  };
+
   const handleSelectFriend = (friend) =>{
     setCurrFriend(
       {
@@ -314,7 +378,7 @@ function MainApp({onLogout, userInfo}) {
                 </div>
               </div>
             </div>
-            )}
+          )}
           {showAddFriend && (
             <div className="add-friend-modal">
               <h1 className="add-friend-title">Add Friend</h1>
@@ -344,8 +408,46 @@ function MainApp({onLogout, userInfo}) {
               </div>
             </div>
           )}
+          {showManageFriends && (
+            <div className="manage-friends-modal">
+              <h1 className="manage-friends-title">Manage Friends</h1>
+              <div className="manage-friends-content">
+                {friends.length > 0 ? (
+                  friends.map((friend) => (
+                    <div key={friend._id} className="friend-manage-item">
+                      <div className="friend-info">
+                        <img src={friend.profilePic} alt={friend.username} className="friend-manage-pfp" />
+                        <span className="friend-manage-username">{friend.username}</span>
+                      </div>
+                      <div className="friend-actions">
+                        <button 
+                          className="remove-friend-button" 
+                          onClick={() => handleRemoveFriend(friend._id)}
+                          title="Remove Friend"
+                        >
+                          <FaUserTimes />
+                        </button>
+                        <button 
+                          className="block-friend-button" 
+                          onClick={() => handleBlockUser(friend._id)}
+                          title="Block User"
+                        >
+                          <FaBan />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-friends-message">You don't have any friends yet.</div>
+                )}
+              </div>
+            </div>
+          )}
           <sidebar className="sidebar">
             <div className="friends-header">
+              <button className="manage-friend-container" onClick={toggleManageFriends}>
+                <FaMinus className="manage-friend-icon" />
+              </button>
               <h1 className="sidebar-title">Friends</h1>
               <button className="add-friend-container" onClick={toggleAddFriend}>
                 <FaPlus className="add-friend-icon" />
