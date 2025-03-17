@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const mongoose = require("mongoose");
+const authMiddleware = require('../middleware/authMiddleware');
 require('dotenv').config();
 
 // Route to register a new user
@@ -131,42 +133,72 @@ router.get("/profile", authMiddleware, async (req, res) => {
 });
 
 // PUT route to add/remove a friend
-router.put("/friends/:friendId", authMiddleware, async (req, res) => {
+router.patch("/friends/:friendId", authMiddleware, async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    console.error("userId", req.query.userId);
+    console.error("friendId", req.params.friendId);
+
     try {
-        const userId = req.user.id; // Get authenticated user's ID
+        const userId = req.query.userId; // Normalize to string
         const { friendId } = req.params;
+
+        // Validate friendId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(friendId)) {
+            await session.abortTransaction();
+            return res.status(400).json({ message: "Invalid friend ID." });
+        }
 
         // Prevent users from adding themselves
         if (userId === friendId) {
+            await session.abortTransaction();
             return res.status(400).json({ message: "You cannot add yourself as a friend." });
         }
 
-        const user = await User.findById(userId);
-        const friend = await User.findById(friendId);
+        // Fetch both users within the session
+        const user = await User.findById(userId).session(session);
+        const friend = await User.findById(friendId).session(session);
 
+        // Check if both users exist
         if (!user || !friend) {
+            await session.abortTransaction();
             return res.status(404).json({ message: "User not found." });
         }
 
-        // Check if friend is already in the list
+        // Normalize friends lists to strings (just in case)
+        user.friends = user.friends.map(id => id.toString());
+        friend.friends = friend.friends.map(id => id.toString());
+
         const isFriend = user.friends.includes(friendId);
 
         if (isFriend) {
             // Remove friend (Unfriend)
-            user.friends = user.friends.filter((id) => id.toString() !== friendId);
-            friend.friends = friend.friends.filter((id) => id.toString() !== userId);
+            user.friends = user.friends.filter(id => id !== friendId);
+            friend.friends = friend.friends.filter(id => id !== userId);
         } else {
             // Add friend
             user.friends.push(friendId);
             friend.friends.push(userId);
         }
 
-        await user.save();
-        await friend.save();
+        // Save both users within transaction
+        await user.save({ session });
+        await friend.save({ session });
 
-        res.json({ message: isFriend ? "Friend removed" : "Friend added", friends: user.friends });
+        // Commit transaction
+        await session.commitTransaction();
+
+        res.json({
+            message: isFriend ? "Friend removed" : "Friend added",
+            friends: user.friends
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error updating friends list", error });
+        await session.abortTransaction();
+        console.error("Error updating friends list:", error);
+        res.status(500).json({ message: "An unexpected error occurred." });
+    } finally {
+        session.endSession();
     }
 });
 

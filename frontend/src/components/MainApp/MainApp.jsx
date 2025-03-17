@@ -9,7 +9,6 @@ import axios from 'axios';
 
 
 function MainApp({onLogout, userInfo}) {
-    console.log('MainApp userInfo:', userInfo);
     const navigate = useNavigate(); 
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -138,12 +137,28 @@ function MainApp({onLogout, userInfo}) {
       }
   };
 
-    const handleAddFriend = (friend) => {
-      axios.post(`/api/users/${userInfo.id}/friends`, { friendId: friend.id });
-
+  const handleAddFriend = async (friend) => {
+    try {
+      const response = await axios.patch(`http://localhost:5000/auth/friends/${friend._id}?userId=${userInfo._id}`, {userId: userInfo.id}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      console.log(response.data.message); // "Friend added" or "Friend removed"
+      console.log('Updated Friends List:', response.data.friends); // Updated list of friend IDs
+  
       setFriends([...friends, friend]);
       setShowAddFriend(false);
-    };
+      console.log(response.data.message); // "Friend added" or "Friend removed"
+      console.log('Updated friends list:', response.data.friends);
+      return response.data;
+  } catch (error) {
+      console.error('Error updating friends:', error.response?.data?.message || error.message);
+      throw error; // Rethrow to handle in UI
+    }
+  };
   
     return (
       <div className="App">
