@@ -20,13 +20,12 @@ function MainApp({onLogout, userInfo}) {
     const [showProfile, setShowProfile] = useState(false);
     const [displayName, setDisplayName] = useState(userInfo?.username);
     const [profilePic, setProfilePic] = useState(userInfo?.profilePicture);
-    const [recipientPFP, setRecipientPFP] = useState('');
     const [showAddFriend, setShowAddFriend] = useState(false);
     const [tempDisplayName, setTempDisplayName] = useState(displayName);
     const [friends, setFriends] = useState([]);
     const [users, setUsers] = useState([{username: userInfo?.username, profilePic: ''}]);
     const [friendSearch, setFriendSearch] = useState('');
-    const [currFriend, setCurrFriend] = useState('');
+    const [currFriend, setCurrFriend] = useState({}); // holds username, pfp
 
     useEffect(() => {
       getFriends();
@@ -118,15 +117,15 @@ function MainApp({onLogout, userInfo}) {
     }
 
     const handleSendMessage = () => {
-      if(currMessage.trim() && currMessage.length <= 200){
-        setMessages([...messages, {text: currMessage, type: 'sent'}]);
+      if (currMessage.trim() && currMessage.length <= 200) {
+        setMessages((prevMessages) => [...prevMessages, { text: currMessage, type: 'sent' }]);
         setCurrMessage('');
-      }else{
+      } else {
         alert('Message must be between 1 and 200 characters');
         return;
       }
     }
-
+    
     const handleFileSelect = (event) => {
       const file = event.target.files[0];
       if (file) {
@@ -175,6 +174,15 @@ function MainApp({onLogout, userInfo}) {
       console.error('Error updating friends:', error.response?.data?.message || error.message);
       throw error; // Rethrow to handle in UI
     }
+  };
+
+  const handleSelectFriend = (friend) =>{
+    setCurrFriend(
+      {
+        username: friend.username,
+        profilePic: friend.profilePic
+      }
+    );
   };
   
     return (
@@ -289,21 +297,21 @@ function MainApp({onLogout, userInfo}) {
             </div>
             <div className="friends-list">
               {friends.map((friend) => (
-                <div key={friend.id} className="friend-item">
+                <button key={friend._id} className="friend-item" onClick={() => handleSelectFriend(friend)}>
                   <img 
                     src={friend.profilePic} 
                     alt={friend.username} 
                     className="friend-pfp"
                   />
                   <span className="friend-username">{friend.username}</span>
-                </div>
+                </button>
               ))}
             </div>
           </sidebar>
           <div className="chat-container">
             <div className="chats-title">Chats</div>
             <div className="message-container">
-              {messages.length == 0 ? (
+              {messages.length == 0 && !currFriend?.username ? (
                 <div className="no-messages">
                   Add a friend or click on a chat to get started
                 </div>
@@ -311,16 +319,16 @@ function MainApp({onLogout, userInfo}) {
                 messages.map((message, index) => (
                   <div key={index} className={`message-${message.type}`}>
                     <div className="pfp">
-                      <img src={message.pfp} alt="Profile" />
+                      <img src={(message.userID == userInfo._id) ? userInfo.profilePic : currFriend.profilePic} alt="Profile" />
                     </div>
                     <div className="message-text">{message.text}</div>
                   </div>
                 ))
               )}
             </div>
-              {currFriend && <div className="message-input-container">
-                <input className="message-input" placeholder="Type a message..." />
-                <button className="send-button">Send</button>
+              {currFriend?.username && <div className="message-input-container">
+                <input className="message-input" placeholder="Type a message..." onChange={(e) => setCurrMessage(e.target.value)}/>
+                <button className="send-button" onClick={handleSendMessage}>Send</button>
               </div>}
           </div>
         </div>
