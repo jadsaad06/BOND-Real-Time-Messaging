@@ -28,25 +28,25 @@ function MainApp({onLogout, userInfo}) {
     const [currFriend, setCurrFriend] = useState({}); // holds username, pfp
 
     useEffect(() => {
-      getFriends();
+       getFriends();
     }, []);
 
-    const getFriends = async () => {
-      for(const friend of userInfo?.friends){
-        try {
-          const response = await axios.get(`http://localhost:5000/auth/users/${friend}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-              'Content-Type': 'application/json'
-            },
-          });
+    console.log('Friends:', userInfo.friends[1]); 
 
-          setFriends([...friends, response.data]);
-        } catch (error) {
-          console.error('Error fetching friends:', error.response?.data?.message || error.message);
-          throw error; // Rethrow to handle in UI
-        }
+    const getFriends = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/auth/users/${userInfo._id}/friends`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        setFriends(response.data);
+        console.log('Friends:', response.data);
+      } catch (error) {
+        console.error('Error fetching friends:', error.response?.data?.message || error.message);
       }
+
     }
             
 
@@ -316,24 +316,24 @@ function MainApp({onLogout, userInfo}) {
                   Add a friend or click on a chat to get started
                 </div>
               ) : (
-                messages.map((message, index) => (
-                  <div key={index} className={`message-${message.type}`}>
-                    <div className="pfp">
-                      <img src={(message.userID == userInfo._id) ? userInfo.profilePic : currFriend.profilePic} alt="Profile" />
+                <div className="messages-wrapper">
+                  {messages.map((message, index) => (
+                    <div key={index} className={`message-${message.type}`}>
+                      <div className="message-text">{message.text}</div>
+                      <img className="pfp" src={(message.userID === userInfo.id) ? userInfo.profilePic : currFriend.profilePic} alt="Profile" />
                     </div>
-                    <div className="message-text">{message.text}</div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
               {currFriend?.username && <div className="message-input-container">
-                <input className="message-input" placeholder="Type a message..." onChange={(e) => setCurrMessage(e.target.value)}/>
+                <input className="message-input" placeholder="Type a message..." value={currMessage} onChange={(e) => setCurrMessage(e.target.value)}/>
                 <button className="send-button" onClick={handleSendMessage}>Send</button>
               </div>}
           </div>
         </div>
       </div>
-  );
+  ); 
   }
 
   export default MainApp;
