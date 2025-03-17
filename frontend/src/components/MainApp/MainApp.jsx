@@ -40,6 +40,9 @@ function MainApp({onLogout, userInfo}) {
     }, [currFriend]);
 
 
+
+
+
     const getMessages = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/messages/${userInfo._id}/${currFriend._id}`, {
@@ -253,20 +256,29 @@ function MainApp({onLogout, userInfo}) {
       return response.data;
   } catch (error) {
       console.error('Error updating friends:', error.response?.data?.message || error.message);
-      throw error; // Rethrow to handle in UI
+      return;
     }
   };
 
   const handleRemoveFriend = async (friendId) => {
     try {
-      const response = await axios.patch(`http://localhost:5000/auth/friends/${friendId}?userId=${userInfo._id}`, {userId: userInfo.id}, {
+      const deleteFriendResponse = await axios.patch(`http://localhost:5000/auth/friends/${friendId}?userId=${userInfo._id}`, {userId: userInfo.id}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         },
       });
-  
-      console.log(response.data.message); // "Friend removed"
+
+      const deleteMessageResponse = await axios.delete(`http://localhost:5000/messages/${userInfo._id}/${friendId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+      });
+      
+
+      console.log(deleteFriendResponse.data.message); // "Friend removed"
+    
       
       // Update friends list after removal
       setFriends(friends.filter(friend => friend._id !== friendId));
@@ -277,10 +289,10 @@ function MainApp({onLogout, userInfo}) {
         setMessages([]);
       }
       
-      return response.data;
+      return [deleteFriendResponse.data, deleteMessageResponse.data];
     } catch (error) {
-      console.error('Error removing friend:', error.response?.data?.message || error.message);
-      throw error;
+      console.error('Error removing friend or message thread:', error.deleteFriendResponse?.data?.message || error.message);
+      return;
     }
   };
   

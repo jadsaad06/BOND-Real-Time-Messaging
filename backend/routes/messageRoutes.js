@@ -93,4 +93,19 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// Delete a conversation between two users
+router.delete('/:senderId/:receiverId', authMiddleware, async (req, res) => {
+    try {
+        const { senderId, receiverId } = req.params;
+        const messageDoc = await Message.findOneAndDelete({ participants: { $all: [senderId, receiverId] } });
+        if (!messageDoc) {
+            return res.status(404).send();
+        }
+        res.status(200).send(messageDoc);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+});
+
+
 module.exports = router;
