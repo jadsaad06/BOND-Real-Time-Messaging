@@ -137,9 +137,6 @@ router.patch("/friends/:friendId", authMiddleware, async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    console.error("userId", req.query.userId);
-    console.error("friendId", req.params.friendId);
-
     try {
         const userId = req.query.userId; // Normalize to string
         const { friendId } = req.params;
