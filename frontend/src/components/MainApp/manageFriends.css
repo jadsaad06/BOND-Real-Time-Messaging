@@ -139,7 +139,7 @@
   }
   
   .manage-friend-icon:hover {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
   }
   
   .friends-header {
