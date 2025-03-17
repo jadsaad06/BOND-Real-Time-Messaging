@@ -88,7 +88,7 @@ function Login({ onLogin }) {
           onChange={(e) => setPassword(e.target.value)}
           className="login-input"
         />
-        <button className="login-button" onClick={handleLogin}>
+        <button className="login-button" onClick={async () => await handleLogin()}>
           Login
         </button>
         <button className="login-button" onClick={() => navigate('/register')}>

@@ -155,11 +155,11 @@ html, body, #root, .App {
   background: rgba(255, 255, 255, 0.03);
   transition: all 0.3s ease;
   cursor: pointer;
+  border: none;
 }
 
 .friend-item:hover {
   background: rgba(255, 255, 255, 0.08);
-  transform: translateX(5px);
 }
 
 .friend-pfp {
@@ -366,4 +366,15 @@ html, body, #root, .App {
 
 .add-friend-icon:hover {
   transform: rotate(90deg);
+}
+
+.no-messages {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 20px;
 }

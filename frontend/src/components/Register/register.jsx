@@ -36,43 +36,45 @@ function Register() {
   const handleRegister = async () => {
     try {
       setError('');
-
+  
       if (!username || !email || !password || !confirmPassword) {
         setError('Please fill out all fields');
         return;
       }
-
+  
       if (!validateEmail(email)) {
         setError('Please enter a valid email address');
         return;
       }
-
+  
       if (password !== confirmPassword) {
         setError('Passwords do not match');
         return;
       }
-
+  
       const passwordError = validatePassword(password);
       if (passwordError) {
         setError(passwordError);
         return;
       }
-
+  
       const response = await axios.post('http://localhost:5000/auth/register', {
         username,
         email,
         password
       });
-
-      if (response.data) {
+  
+      if (response.status === 201) {
         // Registration successful
         navigate('/');
+      } else {
+        setError('Error registering user');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
   };
-
+  
   return (
     <div className="login-container">
       <h1 className="login-title">Bond</h1>
