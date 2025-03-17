@@ -25,13 +25,51 @@ function MainApp({onLogout, userInfo}) {
     const [friends, setFriends] = useState([]);
     const [users, setUsers] = useState([{username: userInfo?.username, profilePic: ''}]);
     const [friendSearch, setFriendSearch] = useState('');
-    const [currFriend, setCurrFriend] = useState({}); // holds username, pfp
+    const [currFriend, setCurrFriend] = useState({}); // holds id, username, pfp
 
     useEffect(() => {
        getFriends();
     }, []);
 
-    console.log('Friends:', userInfo.friends[1]); 
+    useEffect(() => {
+      if(currFriend._id){
+        getMessages();
+      }
+    }, [currFriend]);
+
+
+    const getMessages = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/messages/${userInfo._id}/${currFriend._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        if(response.status !== 200){
+          console.error('Error fetching messages:', response.data.message);
+          return;
+        }
+
+        if(!response.data){
+          setMessages([]);
+          return;
+        }
+        
+        setMessages(response.data.map((message) => ({
+          text: message.content,
+          type: message.sender === userInfo._id ? 'sent' : 'received',
+        })));
+    
+        console.log('Messages:', response.data);
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          console.error('Access denied:', error.response.data.message);
+        } else {
+          console.error('Error fetching messages:', error.response?.data?.message || error.message);
+        }
+      }
+    };
 
     const getFriends = async () => {
       try {
@@ -116,15 +154,33 @@ function MainApp({onLogout, userInfo}) {
       }
     }
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
       if (currMessage.trim() && currMessage.length <= 200) {
-        setMessages((prevMessages) => [...prevMessages, { text: currMessage, type: 'sent' }]);
-        setCurrMessage('');
+        try {
+          const messageData = {
+            sender: userInfo._id,
+            receiver: currFriend._id,
+            content: currMessage
+          };
+    
+          console.log('Sending message:', messageData);
+    
+          const response = await axios.post('http://localhost:5000/messages/send', messageData, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json'
+            }
+          });
+    
+          setMessages((prevMessages) => [...prevMessages, { text: currMessage, type: 'sent' }]);
+          setCurrMessage('');
+        } catch (error) {
+          console.error('Error sending message:', error.response?.data?.message || error.message);
+        }
       } else {
         alert('Message must be between 1 and 200 characters');
-        return;
       }
-    }
+    };
     
     const handleFileSelect = (event) => {
       const file = event.target.files[0];
@@ -179,6 +235,7 @@ function MainApp({onLogout, userInfo}) {
   const handleSelectFriend = (friend) =>{
     setCurrFriend(
       {
+        _id: friend._id,
         username: friend.username,
         profilePic: friend.profilePic
       }
@@ -309,7 +366,7 @@ function MainApp({onLogout, userInfo}) {
             </div>
           </sidebar>
           <div className="chat-container">
-            <div className="chats-title">Chats</div>
+            <div className="chats-title">Bonding with {currFriend?.username ? currFriend?.username : "..."}</div>
             <div className="message-container">
               {messages.length == 0 && !currFriend?.username ? (
                 <div className="no-messages">

@@ -6,18 +6,26 @@ const authMiddleware = require("../middleware/authMiddleware");
 // Protect this route so only authenticated users can send messages
 router.post("/send", authMiddleware, async (req, res) => {
     try {
-        const newMessage = new Message({
-            sender: req.user.id, // Use authenticated user's ID
-            receiver: req.body.receiver,
-            content: req.body.content,
-        });
-
-        const savedMessage = await newMessage.save(); // Save the message to the database
-        res.status(201).json(savedMessage); // Send back the saved message
+      const { sender, receiver, content } = req.body;
+  
+      if (!sender || !receiver || !content) {
+        console.error('Missing required fields:', { sender, receiver, content });
+        return res.status(400).json({ message: "Sender, receiver, and content are required" });
+      }
+  
+      const newMessage = new Message({
+        sender, 
+        receiver,
+        content,
+      });
+  
+      const savedMessage = await newMessage.save(); // Save the message to the database
+      res.status(201).json(savedMessage); // Send back the saved message
     } catch (err) {
-        res.status(400).json({ error: err.message });
+      console.error('Error saving message:', err.message);
+      res.status(400).json({ error: err.message });
     }
-});
+  });
 
 // Protect this route to ensure only logged-in users fetch messages
 router.get("/:senderId/:receiverId", authMiddleware, async (req, res) => {
