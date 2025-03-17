@@ -10,14 +10,21 @@ const messageSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    content: {
-        type: String,
-        required: true,
-    },
-    timestamp: {
-        type: Date,
-        default: Date.now,
-    },
+    messages: [{
+        content: {
+            type: String,
+            required: true,
+        },
+        type: {
+            type: String,
+            enum: ['sent', 'received'],
+            required: true,
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now,
+        },
+    }]
 });
 
 // Create a model from the schema
