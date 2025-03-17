@@ -44,7 +44,8 @@ router.get("/:senderId/:receiverId", authMiddleware, async (req, res) => {
         const messageDoc = await Message.findOne({ participants: { $all: [senderId, receiverId] } });
 
         if (!messageDoc) {
-            return res.status(404).json({ error: "Messages not found" });
+            // Return an empty array if no messages are found
+            return res.status(200).json([]);
         }
 
         res.status(200).json(messageDoc.messages); // Send back the messages array

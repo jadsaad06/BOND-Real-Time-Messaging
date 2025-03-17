@@ -46,15 +46,12 @@ function MainApp({onLogout, userInfo}) {
             'Content-Type': 'application/json',
           }
         });
+
         if(response.status !== 200){
           console.error('Error fetching messages:', response.data.message);
           return;
         }
 
-        if(!response.data){
-          setMessages([]);
-          return;
-        }
         
         setMessages(response.data.map((message) => ({
           text: message.content,
@@ -63,7 +60,9 @@ function MainApp({onLogout, userInfo}) {
     
         console.log('Messages:', response.data);
       } catch (error) {
-        if (error.response && error.response.status === 403) {
+        if(error.response && error.response.status === 404){
+          setMessages([]);
+        }else if (error.response && error.response.status === 403) {
           console.error('Access denied:', error.response.data.message);
         } else {
           console.error('Error fetching messages:', error.response?.data?.message || error.message);

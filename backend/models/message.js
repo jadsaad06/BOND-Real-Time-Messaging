@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const arrayLimit = (val) => val.length <= 2;
+
 // Define the schema for a message
 const messageSchema = new mongoose.Schema({
     participants: {
