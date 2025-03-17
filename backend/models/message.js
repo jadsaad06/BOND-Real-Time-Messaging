@@ -2,22 +2,18 @@ const mongoose = require("mongoose");
 
 // Define the schema for a message
 const messageSchema = new mongoose.Schema({
-    sender: {
-        type: String,
+    participants: {
+        type: [String],
         required: true,
-    },
-    receiver: {
-        type: String,
-        required: true,
+        validate: [arrayLimit, '{PATH} exceeds the limit of 2'],
     },
     messages: [{
         content: {
             type: String,
             required: true,
         },
-        type: {
+        sender: {
             type: String,
-            enum: ['sent', 'received'],
             required: true,
         },
         timestamp: {
