@@ -366,3 +366,14 @@ html, body, #root, .App {
 .add-friend-icon:hover {
   transform: rotate(90deg);
 }
+
+.no-messages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 20px;
+}
