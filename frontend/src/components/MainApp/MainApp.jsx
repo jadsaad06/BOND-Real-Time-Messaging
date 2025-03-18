@@ -49,8 +49,12 @@ function MainApp({onLogout, userInfo}) {
     useEffect(() => {
       // Listen for incoming messages
       socket.on("receiveMessage", (data) => {
-          console.log("Received message via WebSocket:", data);
-          setMessages((prevMessages) => [...prevMessages, { text: data.content, type: "received" }]);
+        console.log("Received message via WebSocket:", data);
+        console.log("Current messages before update:", messages);
+        console.log("Current sender: ", data.sender);
+        console.log("Current friend: ", currFriend._id);
+
+        setMessages((prev) => [...prev, { text: data.content.trim(), type: 'recieved' }]);
       });
 
       return () => socket.off("receiveMessage"); // Cleanup listener
