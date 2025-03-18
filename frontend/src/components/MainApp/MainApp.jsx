@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import './MainApp.css';
 import './addFriend.css';
 import './profile.css';
-import './settings.css';
 import './manageFriends.css';
 import { useNavigate } from 'react-router-dom';
 import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus, FaMinus, FaUserTimes, FaBan} from 'react-icons/fa';
 import axios from 'axios';
+import Settings from '../Settings/settings';
 //import { io } from "socket.io-client";
 //const socket = io("http://localhost:5000");
 
@@ -390,20 +390,7 @@ function MainApp({onLogout, userInfo}) {
           {showSettings && (
             <div className="settings-container">
               <h1 className="settings-title">Settings</h1>
-              <div className="settings-content">
-                <div className="setting">
-                  <h2>Change Email</h2>
-                </div>
-                <div className="setting">
-                  <h2>Change Password</h2>
-                </div>
-                <div className="setting">
-                  <h2>Edit Block List</h2>
-                </div>
-                <div className="setting">
-                  <h2>2 Factor Authentication</h2>
-                </div>
-              </div>
+              <Settings userInfo={userInfo} />
             </div>
           )}
           {showAddFriend && (
