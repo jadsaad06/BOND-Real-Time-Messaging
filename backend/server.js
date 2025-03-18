@@ -4,10 +4,13 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 const Message = require("./models/message");
 const User = require("./models/user");
 const { Server } = require("socket.io");
 const http = require("http");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 
@@ -23,6 +26,8 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cors());
 
+app.use('/uploads', express.static('uploads'));  // Serve profile pictures from 'uploads' directory
+
 // MongoDB Connection with error handling
 mongoose.connect(process.env.DB_KEY)
   .then(() => {
@@ -36,6 +41,7 @@ mongoose.connect(process.env.DB_KEY)
 // Routes
 app.use('/auth', authRoutes);
 app.use('/messages', messageRoutes);
+app.use('/profile', profileRoutes);
 
 // Basic test route
 app.get("/", (req, res) => {
