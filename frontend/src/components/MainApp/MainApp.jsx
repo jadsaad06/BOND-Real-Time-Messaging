@@ -347,9 +347,12 @@ function MainApp({onLogout, userInfo}) {
   
   const handleBlockUser = async (userId) => {
     try {
-      // This would be the actual API call to block a user
-      // For now we'll just remove them from friends
-      await handleRemoveFriend(userId);
+      axios.post(`http://localhost:5000/blockAUser`, { blockedId: userId }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      })
       alert(`User blocked successfully!`);
     } catch (error) {
       console.error('Error blocking user:', error);
