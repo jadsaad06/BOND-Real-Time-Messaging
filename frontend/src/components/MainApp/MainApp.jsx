@@ -47,17 +47,16 @@ function MainApp({onLogout, userInfo}) {
     }, [userInfo]);
 
     useEffect(() => {
-      // Listen for incoming messages
       socket.on("receiveMessage", (data) => {
         console.log("Received message via WebSocket:", data);
-        console.log("Current messages before update:", messages);
-        console.log("Current sender: ", data.sender);
-        console.log("Current friend: ", currFriend._id);
-
-        setMessages((prev) => [...prev, { text: data.content.trim(), type: 'recieved' }]);
+        setMessages((prev) => [...prev, { 
+          text: data.content.trim(), 
+          type: 'received',
+          userID: data.sender
+        }]);
       });
-
-      return () => socket.off("receiveMessage"); // Cleanup listener
+    
+      return () => socket.off("receiveMessage");
     }, []);
 
     const getMessages = async () => {
@@ -74,19 +73,17 @@ function MainApp({onLogout, userInfo}) {
           return;
         }
 
-        
         setMessages(response.data.map((message) => ({
           text: message.content,
           type: message.sender === userInfo._id ? 'sent' : 'received',
+          userID: message.sender
         })));
-    
+
       } catch (error) {
         if(error.response && error.response.status === 404){
           setMessages([]);
-        }else if (error.response && error.response.status === 403) {
-          console.error('Access denied:', error.response.data.message);
         } else {
-          console.error('Error fetching messages:', error.response?.data?.message || error.message);
+          console.error('Error fetching messages:', error);
         }
       }
     };
@@ -267,19 +264,49 @@ function MainApp({onLogout, userInfo}) {
     
     const searchUsers = async (searchQuery) => {
       try {
-          const response = await axios.get(`http://localhost:5000/auth/users/search`, {
-              params: { username: searchQuery },
-              headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`
-              }
-          });
-          const searchResult = response.data.filter(user => user._id !== userInfo._id);
-          setUsers(searchResult);
+        const response = await axios.get(`http://localhost:5000/auth/users/search`, {
+          params: { 
+            username: searchQuery,
+            userId: userInfo._id  // Add userId to identify the searcher
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+    
+        // Map the results to include profile pictures
+        const usersWithPics = await Promise.all(
+          response.data.map(async (user) => {
+            try {
+              const picResponse = await axios.get(
+                `http://localhost:5000/profile/profilePicture/${user._id}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                  }
+                }
+              );
+              return {
+                ...user,
+                profilePic: picResponse.data.profilePicture ? 
+                  `http://localhost:5000${picResponse.data.profilePicture}` : 
+                  '/default-avatar.png'
+              };
+            } catch (error) {
+              return {
+                ...user,
+                profilePic: '/default-avatar.png'
+              };
+            }
+          })
+        );
+    
+        setUsers(usersWithPics.filter(user => user._id !== userInfo._id));
       } catch (error) {
-          console.error('Error searching users:', error);
+        console.error('Error searching users:', error);
       }
-  };
-
+    };
+    
   const handleAddFriend = async (friend) => {
     try {
       const response = await axios.patch(`http://localhost:5000/auth/friends/${friend._id}?userId=${userInfo._id}`, {}, {
@@ -554,11 +581,20 @@ function MainApp({onLogout, userInfo}) {
                   {messages.map((message, index) => (
                     <div key={index} className={`message-${message.type}`}>
                       <div className="message-text">{message.text}</div>
-                      <img className="pfp" src={(message.userID === userInfo.id) ? userInfo.profilePic : currFriend.profilePic} alt="Profile" />
+                      <img 
+                        className="pfp" 
+                        src={message.userID === userInfo._id ? profilePic : currFriend.profilePic} 
+                        alt={`${message.userID === userInfo._id ? 'Your' : `${currFriend.username}'s`} profile`}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/default-avatar.png';
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </div>
               {currFriend?.username && <div className="message-input-container">
                 <input className="message-input" placeholder="Type a message..." value={currMessage} onChange={(e) => setCurrMessage(e.target.value)}/>
@@ -569,5 +605,4 @@ function MainApp({onLogout, userInfo}) {
       </div>
   ); 
   }
-
   export default MainApp;

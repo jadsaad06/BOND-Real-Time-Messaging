@@ -238,9 +238,10 @@ html, body, #root, .App {
 .messages-wrapper {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  gap: 10px;
-  margin-top: auto; 
+  overflow-y: auto;
+  max-height: 100%;
+  padding: 1rem;
+  scroll-behavior: smooth;
 }
 
 /* Add custom scrollbar styling for messages */
