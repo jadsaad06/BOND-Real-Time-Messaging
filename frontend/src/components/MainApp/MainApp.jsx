@@ -6,7 +6,8 @@ import './settings.css';
 import { useNavigate } from 'react-router-dom';
 import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus} from 'react-icons/fa';
 import axios from 'axios';
-
+//import { io } from "socket.io-client";
+//const socket = io("http://localhost:5000");
 
 function MainApp({onLogout, userInfo}) {
     const navigate = useNavigate(); 
@@ -37,6 +38,19 @@ function MainApp({onLogout, userInfo}) {
       }
     }, [currFriend]);
 
+    /*useEffect(() => {
+      // Join user’s room when component mounts
+      socket.emit("joinRoom", userId);
+
+      // Listen for incoming messages
+      socket.on("receiveMessage", (newMessage) => {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      });
+
+      return () => {
+        socket.disconnect(); // Cleanup on unmount
+      };
+    }, [userId]);*/
 
     const getMessages = async () => {
       try {
