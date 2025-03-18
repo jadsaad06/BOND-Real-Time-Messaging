@@ -25,6 +25,8 @@ function MainApp({onLogout, userInfo}) {
     const [showAddFriend, setShowAddFriend] = useState(false);
     const [showManageFriends, setShowManageFriends] = useState(false);
     const [tempDisplayName, setTempDisplayName] = useState(displayName);
+    const [usernameChangeError, setUsernameChangeError] = useState('');
+    const [usernameChangeSuccess, setUsernameChangeSuccess] = useState('');
     const [friends, setFriends] = useState([]);
     const [users, setUsers] = useState([{username: userInfo?.username, profilePic: ''}]);
     const [friendSearch, setFriendSearch] = useState('');
@@ -227,12 +229,41 @@ function MainApp({onLogout, userInfo}) {
       navigate('/'); // Navigate to login page
     };
 
-    const handleSaveName = () => {
-      if(tempDisplayName.trim() && tempDisplayName.length <= 20){
-        setDisplayName(tempDisplayName);
-        setTempDisplayName(tempDisplayName);
+    const handleSaveName = async () => {
+      setUsernameChangeError('');
+      setUsernameChangeSuccess('');
+      
+      if (!tempDisplayName.trim()) {
+        setUsernameChangeError('Username cannot be empty');
+        return;
       }
-    }
+      
+      try {
+        const response = await axios.patch(`http://localhost:5000/auth/users/${userInfo._id}/username`, 
+          { newUsername: tempDisplayName },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+        
+        setDisplayName(tempDisplayName);
+        setUsernameChangeSuccess('Username updated successfully');
+        
+        setTimeout(() => {
+          setUsernameChangeSuccess('');
+        }, 2000);
+        
+      } catch (error) {
+        if (error.response?.data?.message === "Username is already in use") {
+          setUsernameChangeError('This username is already taken');
+        } else {
+          setUsernameChangeError(error.response?.data?.message || 'Error updating username');
+        }
+      }
+    };
 
     const handleSendMessage = async () => {
       if (currMessage.trim() && currMessage.length <= 200) {
@@ -479,7 +510,7 @@ function MainApp({onLogout, userInfo}) {
                   </button>
                 </div>
                 <div className="profile-setting">
-                  <h2>Display Name</h2>
+                  <h2>Username</h2>
                   <div className="profile-input-container">
                     <input
                       type="text"
@@ -491,6 +522,8 @@ function MainApp({onLogout, userInfo}) {
                       Save
                     </button>
                   </div>
+                  {usernameChangeError && <div className="error-message">{usernameChangeError}</div>}
+                  {usernameChangeSuccess && <div className="success-message">{usernameChangeSuccess}</div>}
                 </div>
                 <button className="logout-btn" onClick={handleLogout}>
                   <FaSignOutAlt /> Logout
