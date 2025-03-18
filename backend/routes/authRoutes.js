@@ -13,8 +13,12 @@ router.post('/register', async (req, res) => {
 
     try {
         // Check if email already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: "Email already in use" });
+        const existingUserByEmail = await User.findOne({ email });
+        if (existingUserByEmail) return res.status(400).json({ message: "Email already in use" });
+        
+        // Check if username already exists
+        const existingUserByUsername = await User.findOne({ username });
+        if (existingUserByUsername) return res.status(400).json({ message: "Username already in use" });
 
         const newUser = new User({ username, email, password });
         await newUser.save();
@@ -242,9 +246,10 @@ router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
 });
 
 // Change Email Route
-router.put("/changeEmail", authMiddleware, async (req, res) => {
+router.patch("/users/:id/email", authMiddleware, async (req, res) => {
     try {
-        const { newEmail } = req.body;
+        const { newEmail, password } = req.body;
+        const userId = req.params.id;
 
         if (!newEmail) {
             return res.status(400).json({ message: "New email is required" });
@@ -252,29 +257,40 @@ router.put("/changeEmail", authMiddleware, async (req, res) => {
 
         // Ensure the new email is not already taken by another user
         const existingUser = await User.findOne({ email: newEmail });
-        if (existingUser) {
+        if (existingUser && existingUser._id.toString() !== userId) {
             return res.status(400).json({ message: "Email is already in use" });
         }
 
-        // Update the email
-        const user = await User.findById(req.user.id);
+        // Get the user
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Verify password if it's provided
+        if (password) {
+            const isMatch = await user.comparePassword(password);
+            if (!isMatch) {
+                return res.status(400).json({ message: "Password is incorrect" });
+            }
+        }
+
+        // Update the email
         user.email = newEmail;
         await user.save();
 
         res.status(200).json({ message: "Email updated successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Error changing email", error });
+        console.error('Error changing email:', error);
+        res.status(500).json({ message: "Error changing email", error: error.message });
     }
 });
 
 // Change Username Route
-router.put("/changeUsername", authMiddleware, async (req, res) => {
+router.patch("/users/:id/username", authMiddleware, async (req, res) => {
     try {
         const { newUsername } = req.body;
+        const userId = req.params.id;
 
         if (!newUsername) {
             return res.status(400).json({ message: "New username is required" });
@@ -282,12 +298,12 @@ router.put("/changeUsername", authMiddleware, async (req, res) => {
 
         // Ensure the new username is not already taken by another user
         const existingUser = await User.findOne({ username: newUsername });
-        if (existingUser) {
+        if (existingUser && existingUser._id.toString() !== userId) {
             return res.status(400).json({ message: "Username is already in use" });
         }
 
         // Update the username
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -297,41 +313,41 @@ router.put("/changeUsername", authMiddleware, async (req, res) => {
 
         res.status(200).json({ message: "Username updated successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Error changing username", error });
+        console.error('Error changing username:', error);
+        res.status(500).json({ message: "Error changing username", error: error.message });
     }
 });
 
-router.put("/changePassword", authMiddleware, async (req, res) => {
+// Change Password Route
+router.patch("/users/:id/password", authMiddleware, async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
+        const userId = req.params.id;
 
         if (!oldPassword || !newPassword) {
             return res.status(400).json({ message: "Both old and new passwords are required" });
         }
 
-        const user = await User.findById(req.user.id);
-        
+        // Get the user
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
         // Check if the old password matches
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        const isMatch = await user.comparePassword(oldPassword);
         if (!isMatch) {
             return res.status(400).json({ message: "Old password is incorrect" });
         }
 
-        // Hash the new password before saving
-        const salt = await bcrypt.genSalt(10);  // Generate a salt
-        const hashedPassword = await bcrypt.hash(newPassword, salt);  // Hash the new password
-
-        // Update the password in the database
-        user.password = hashedPassword;
+        // Hash the new password before saving (this should be handled by the model's pre-save hook)
+        user.password = newPassword;
         await user.save();
 
         res.status(200).json({ message: "Password updated successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Error changing password", error });
+        console.error('Error changing password:', error);
+        res.status(500).json({ message: "Error changing password", error: error.message });
     }
 });
 

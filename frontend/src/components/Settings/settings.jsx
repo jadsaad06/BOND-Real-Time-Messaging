@@ -82,7 +82,11 @@ function Settings({ userInfo }) {
       }, 2000);
       
     } catch (error) {
-      setEmailChangeError(error.response?.data?.message || 'Error updating email');
+      if (error.response?.data?.message === "Email is already in use") {
+        setEmailChangeError('This email is already in use by another account');
+      } else {
+        setEmailChangeError(error.response?.data?.message || 'Error updating email');
+      }
     }
   };
 
@@ -122,7 +126,11 @@ function Settings({ userInfo }) {
       }, 2000);
       
     } catch (error) {
-      setPasswordError(error.response?.data?.message || 'Error updating password');
+      if (error.response?.data?.message === "Old password is incorrect") {
+        setPasswordError('Current password is incorrect');
+      } else {
+        setPasswordError(error.response?.data?.message || 'Error updating password');
+      }
     }
   };
 
@@ -207,6 +215,7 @@ function Settings({ userInfo }) {
 
   return (
     <div className="settings-content">
+      
       {/* Change Email Setting */}
       <div className="setting" onClick={() => setShowEmailChange(!showEmailChange)}>
         <h2>Change Email</h2>
