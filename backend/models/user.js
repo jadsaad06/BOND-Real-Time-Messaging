@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 });
 
 // Hash the password before saving the user
