@@ -202,7 +202,7 @@ router.patch("/friends/:friendId", authMiddleware, async (req, res) => {
 // DELETE route to remove a friend
 router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
     try {
-        const userId = req.user.id; // Get authenticated user's ID
+        const userId = req.query.userId; // Get authenticated user's ID
         const { friendId } = req.params;
 
         const user = await User.findById(userId);

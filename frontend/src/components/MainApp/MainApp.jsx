@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus, FaMinus, FaUserTimes, FaBan} from 'react-icons/fa';
 import axios from 'axios';
 
-
 function MainApp({onLogout, userInfo}) {
     const navigate = useNavigate(); 
     const messagesEndRef = useRef(null);
@@ -63,7 +62,6 @@ function MainApp({onLogout, userInfo}) {
           type: message.sender === userInfo._id ? 'sent' : 'received',
         })));
     
-        console.log('Messages:', response.data);
       } catch (error) {
         if(error.response && error.response.status === 404){
           setMessages([]);
@@ -238,7 +236,7 @@ function MainApp({onLogout, userInfo}) {
 
   const handleAddFriend = async (friend) => {
     try {
-      const response = await axios.patch(`http://localhost:5000/auth/friends/${friend._id}?userId=${userInfo._id}`, {userId: userInfo.id}, {
+      const response = await axios.patch(`http://localhost:5000/auth/friends/${friend._id}?userId=${userInfo._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
@@ -262,39 +260,44 @@ function MainApp({onLogout, userInfo}) {
 
   const handleRemoveFriend = async (friendId) => {
     try {
-      const deleteFriendResponse = await axios.patch(`http://localhost:5000/auth/friends/${friendId}?userId=${userInfo._id}`, {userId: userInfo.id}, {
+      // Remove friend from the database
+      const deleteFriendResponse = await axios.delete(`http://localhost:5000/auth/friends/${friendId}?userId=${userInfo._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         },
       });
-
-      const deleteMessageResponse = await axios.delete(`http://localhost:5000/messages/${userInfo._id}/${friendId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        },
-      });
-      
-
+  
       console.log(deleteFriendResponse.data.message); // "Friend removed"
-    
-      
+  
       // Update friends list after removal
       setFriends(friends.filter(friend => friend._id !== friendId));
-      
+  
       // If current friend was removed, clear the chat
-      if(currFriend._id === friendId) {
+      if (currFriend._id === friendId) {
         setCurrFriend({});
         setMessages([]);
       }
-      
-      return [deleteFriendResponse.data, deleteMessageResponse.data];
+      // Remove chat messages if they exist
+      try {
+        const deleteMessageResponse = await axios.delete(`http://localhost:5000/messages/${userInfo._id}/${friendId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          },
+        });
+        console.log(deleteMessageResponse.data.message); // "Messages deleted"
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log('No messages to delete');
+        } else {
+          console.error('Error removing message thread:', error.response?.data?.message || error.message);
+        }
+      }
     } catch (error) {
-      console.error('Error removing friend or message thread:', error.deleteFriendResponse?.data?.message || error.message);
-      return;
-    }
-  };
+    console.error('Error removing friend:', error.response?.data?.message || error.message);
+  }
+};
   
   const handleBlockUser = async (userId) => {
     try {
