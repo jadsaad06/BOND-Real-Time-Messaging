@@ -7,8 +7,8 @@ import './manageFriends.css';
 import { useNavigate } from 'react-router-dom';
 import {FaCog, FaUserEdit, FaSignOutAlt, FaPlus, FaMinus, FaUserTimes, FaBan} from 'react-icons/fa';
 import axios from 'axios';
-//import { io } from "socket.io-client";
-//const socket = io("http://localhost:5000");
+import { io } from "socket.io-client";
+const socket = io("http://localhost:5000");
 
 function MainApp({onLogout, userInfo}) {
     const navigate = useNavigate(); 
@@ -40,19 +40,21 @@ function MainApp({onLogout, userInfo}) {
       }
     }, [currFriend]);
 
-    /*useEffect(() => {
-      // Join user’s room when component mounts
-      socket.emit("joinRoom", userId);
+    useEffect(() => {
+      if (userInfo?._id) { // Ensure userInfo exists before joining
+          socket.emit("joinRoom", userInfo._id);
+      }
 
       // Listen for incoming messages
-      socket.on("receiveMessage", (newMessage) => {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      socket.on("receiveMessage", (data) => {
+          console.log("Received message via WebSocket:", data);
+          setMessages((prevMessages) => [...prevMessages, { text: data.content, type: "received" }]);
       });
 
       return () => {
-        socket.disconnect(); // Cleanup on unmount
+          socket.off("receiveMessage"); // Cleanup listener
       };
-    }, [userId]);*/
+    }, [userInfo]); // Depend on userInfo so it runs when it changes
 
     const getMessages = async () => {
       try {
@@ -202,6 +204,8 @@ function MainApp({onLogout, userInfo}) {
           };
     
           console.log('Sending message:', messageData);
+
+          socket.emit('sendMessage', messageData);
     
           const response = await axios.post('http://localhost:5000/messages/send', messageData, {
             headers: {
