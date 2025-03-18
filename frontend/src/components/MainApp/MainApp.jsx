@@ -230,14 +230,38 @@ function MainApp({onLogout, userInfo}) {
       }
     };
     
-    const handleFileSelect = (event) => {
+    const handleFileSelect = async (event) => {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setProfilePic(reader.result);
-        };
-        reader.readAsDataURL(file);
+        try {
+          const formData = new FormData();
+          formData.append('profilePicture', file);
+          
+          console.log('Uploading file:', file.name);
+          
+          const response = await axios.post(
+            `http://localhost:5000/profile/uploadProfilePicture?userId=${userInfo._id}`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+              }
+            }
+          );
+          
+          console.log('Upload response:', response.data);
+          
+          // Use the profilePicture path directly from the response
+          if (response.data.profilePicture) {
+            const profilePicUrl = `http://localhost:5000${response.data.profilePicture}`;
+            setProfilePic(profilePicUrl);
+            console.log('Profile pic updated:', profilePicUrl);
+          }
+        } catch (error) {
+          console.error('Error uploading profile picture:', error.response?.data || error.message);
+          alert('Failed to upload profile picture');
+        }
       }
     };
     
@@ -341,6 +365,31 @@ function MainApp({onLogout, userInfo}) {
       }
     );
   };
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      if (!userInfo?._id) return;
+
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/profile/profilePicture/${userInfo._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        
+        if (response.data.profilePicture) {
+          setProfilePic(`http://localhost:5000${response.data.profilePicture}`);
+        }
+      } catch (error) {
+        console.error('Error fetching profile picture:', error);
+      }
+    };
+
+    fetchProfilePicture();
+  }, [userInfo]);
   
     return (
       <div className="App">

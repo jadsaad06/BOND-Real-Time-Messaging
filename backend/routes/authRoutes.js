@@ -237,7 +237,7 @@ router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
 });
 
 // Change Email Route
-router.put("/changeEmail", authenticateUser, async (req, res) => {
+router.put("/changeEmail", authMiddleware, async (req, res) => {
     try {
         const { newEmail } = req.body;
 
@@ -267,7 +267,7 @@ router.put("/changeEmail", authenticateUser, async (req, res) => {
 });
 
 // Change Username Route
-router.put("/changeUsername", authenticateUser, async (req, res) => {
+router.put("/changeUsername", authMiddleware, async (req, res) => {
     try {
         const { newUsername } = req.body;
 
@@ -296,7 +296,7 @@ router.put("/changeUsername", authenticateUser, async (req, res) => {
     }
 });
 
-router.put("/changePassword", authenticateUser, async (req, res) => {
+router.put("/changePassword", authMiddleware, async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
 

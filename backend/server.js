@@ -27,7 +27,8 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cors());
 
-app.use('/uploads', express.static('uploads'));  // Serve profile pictures from 'uploads' directory
+// Make sure this path is correct
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection with error handling
 mongoose.connect(process.env.DB_KEY)
