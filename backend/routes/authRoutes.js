@@ -75,16 +75,26 @@ router.get("/users", async (req, res) => {
 router.get("/users/search", async (req, res) => {
     try {
         const searchQuery = req.query.username;
-        
+        const userId = req.query.userId; // Assuming the user's ID is added to req.user in authentication middleware
+
         if (!searchQuery) {
             return res.status(400).json({ message: "Search query is required" });
         }
 
         // Create a case-insensitive regex pattern that matches usernames starting with the search query
         const regex = new RegExp(`^${searchQuery}`, 'i');
-        
-        const users = await User.find({ 
-            username: regex
+
+        // Find the current user to get the blocked list
+        const user = await User.findById(userId).select('blockedUsers');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Exclude blocked users from the search results
+        const users = await User.find({
+            username: regex,
+            _id: { $nin: user.blockedUsers } // Exclude users who are in the blockedUsers list
         })
         .select("username email profilePicture")
         .limit(10); // Limit results to 10 users

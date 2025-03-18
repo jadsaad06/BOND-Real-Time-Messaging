@@ -5,7 +5,7 @@ const router = express.Router();
 // Get blocked users for the authenticated user
 router.get('/blockedUsers', async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).populate('blockedUsers', 'username email profilePicture');
+    const user = await User.findById(req.query.userId).populate('blockedUsers', 'username email profilePicture');
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -26,7 +26,7 @@ router.post('/blockUser', async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.query.userId);
     const userToBlock = await User.findById(userIdToBlock);
 
     if (!user || !userToBlock) {
@@ -57,7 +57,7 @@ router.delete('/unblockUser', async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.query.userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
