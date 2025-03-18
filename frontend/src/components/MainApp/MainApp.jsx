@@ -47,17 +47,16 @@ function MainApp({onLogout, userInfo}) {
     }, [userInfo]);
 
     useEffect(() => {
-      // Listen for incoming messages
       socket.on("receiveMessage", (data) => {
         console.log("Received message via WebSocket:", data);
-        console.log("Current messages before update:", messages);
-        console.log("Current sender: ", data.sender);
-        console.log("Current friend: ", currFriend._id);
-
-        setMessages((prev) => [...prev, { text: data.content.trim(), type: 'recieved' }]);
+        setMessages((prev) => [...prev, { 
+          text: data.content.trim(), 
+          type: 'received',
+          userID: data.sender
+        }]);
       });
 
-      return () => socket.off("receiveMessage"); // Cleanup listener
+      return () => socket.off("receiveMessage");
     }, []);
 
     const getMessages = async () => {
@@ -74,12 +73,12 @@ function MainApp({onLogout, userInfo}) {
           return;
         }
 
-        
         setMessages(response.data.map((message) => ({
           text: message.content,
           type: message.sender === userInfo._id ? 'sent' : 'received',
+          userID: message.sender
         })));
-    
+
       } catch (error) {
         if(error.response && error.response.status === 404){
           setMessages([]);
@@ -238,13 +237,14 @@ function MainApp({onLogout, userInfo}) {
             receiver: currFriend._id,
             content: currMessage
           };
-    
-          console.log('Sending message:', messageData);
 
           socket.emit('sendMessage', messageData);
 
-    
-          setMessages((prevMessages) => [...prevMessages, { text: currMessage, type: 'sent' }]);
+          setMessages((prevMessages) => [...prevMessages, { 
+            text: currMessage, 
+            type: 'sent',
+            userID: userInfo._id
+          }]);
           setCurrMessage('');
 
           const response = await axios.post('http://localhost:5000/messages/send', messageData, {
@@ -598,7 +598,11 @@ function MainApp({onLogout, userInfo}) {
                   {messages.map((message, index) => (
                     <div key={index} className={`message-${message.type}`}>
                       <div className="message-text">{message.text}</div>
-                      <img className="pfp" src={(message.userID === userInfo.id) ? userInfo.profilePic : currFriend.profilePic} alt="Profile" />
+                      <img 
+                        className="pfp" 
+                        src={message.type === 'sent' ? profilePic : currFriend.profilePic} 
+                        alt={`${message.type === 'sent' ? 'Your' : `${currFriend.username}'s`} profile`}
+                      />
                     </div>
                   ))}
                 </div>
