@@ -91,6 +91,27 @@ function MainApp({onLogout, userInfo}) {
       }
     };
 
+    const fetchFriendProfilePicture = async (friendId) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/profile/profilePicture/${friendId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        
+        if (response.data.profilePicture) {
+          return `http://localhost:5000${response.data.profilePicture}`;
+        }
+        return null;
+      } catch (error) {
+        console.error('Error fetching friend profile picture:', error);
+        return null;
+      }
+    };
+
     const getFriends = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/auth/users/${userInfo._id}/friends`, {
@@ -99,13 +120,24 @@ function MainApp({onLogout, userInfo}) {
             'Content-Type': 'application/json',
           }
         });
-        setFriends(response.data);
-        console.log('Friends:', response.data);
+    
+        // Fetch profile pictures for each friend
+        const friendsWithPics = await Promise.all(
+          response.data.map(async (friend) => {
+            const profilePic = await fetchFriendProfilePicture(friend._id);
+            return {
+              ...friend,
+              profilePic: profilePic || '/default-profile.png' // Add a default profile picture path
+            };
+          })
+        );
+    
+        setFriends(friendsWithPics);
+        console.log('Friends with profile pictures:', friendsWithPics);
       } catch (error) {
         console.error('Error fetching friends:', error.response?.data?.message || error.message);
       }
-
-    }
+    };
             
 
     const scrollToBottom = () => {
@@ -267,18 +299,31 @@ function MainApp({onLogout, userInfo}) {
     
     const searchUsers = async (searchQuery) => {
       try {
-          const response = await axios.get(`http://localhost:5000/auth/users/search`, {
-              params: { username: searchQuery },
-              headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`
-              }
-          });
-          const searchResult = response.data.filter(user => user._id !== userInfo._id);
-          setUsers(searchResult);
+        const response = await axios.get(`http://localhost:5000/auth/users/search`, {
+          params: { username: searchQuery },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+    
+        // Fetch profile pictures for search results
+        const usersWithPics = await Promise.all(
+          response.data
+            .filter(user => user._id !== userInfo._id)
+            .map(async (user) => {
+              const profilePic = await fetchFriendProfilePicture(user._id);
+              return {
+                ...user,
+                profilePic: profilePic || '/default-profile.png'
+              };
+            })
+        );
+    
+        setUsers(usersWithPics);
       } catch (error) {
-          console.error('Error searching users:', error);
+        console.error('Error searching users:', error);
       }
-  };
+    };
 
   const handleAddFriend = async (friend) => {
     try {
@@ -359,14 +404,13 @@ function MainApp({onLogout, userInfo}) {
     }
   };
 
-  const handleSelectFriend = (friend) =>{
-    setCurrFriend(
-      {
-        _id: friend._id,
-        username: friend.username,
-        profilePic: friend.profilePic
-      }
-    );
+  const handleSelectFriend = async (friend) => {
+    const profilePic = await fetchFriendProfilePicture(friend._id);
+    setCurrFriend({
+      _id: friend._id,
+      username: friend.username,
+      profilePic: profilePic || '/default-profile.png'
+    });
   };
 
   useEffect(() => {
