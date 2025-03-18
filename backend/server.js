@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const blockedRoutes = require("./routes/blockedRoutes");
 const Message = require("./models/message");
 const User = require("./models/user");
 const { Server } = require("socket.io");
@@ -42,6 +43,7 @@ mongoose.connect(process.env.DB_KEY)
 app.use('/auth', authRoutes);
 app.use('/messages', messageRoutes);
 app.use('/profile', profileRoutes);
+app.use('/blocked', blockedRoutes);
 
 // Basic test route
 app.get("/", (req, res) => {

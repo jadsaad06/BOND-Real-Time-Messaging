@@ -23,7 +23,7 @@ router.post('/uploadProfilePicture', upload.single('profilePicture'), async (req
   }
 
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.userId);
     user.profilePicture = `/uploads/${req.file.filename}`;
     await user.save();
 
@@ -36,7 +36,7 @@ router.post('/uploadProfilePicture', upload.single('profilePicture'), async (req
 // Retrieve profile picture for the authenticated user
 router.get('/profilePicture', async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.userId);
     if (!user || !user.profilePicture) {
       return res.status(404).json({ error: 'Profile picture not found' });
     }
