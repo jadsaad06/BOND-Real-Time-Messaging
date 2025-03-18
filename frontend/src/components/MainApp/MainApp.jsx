@@ -484,8 +484,12 @@ function MainApp({onLogout, userInfo}) {
             </button>
           </profile>
             <h1 className='title'>Bond</h1>
-            <button className="settings-button">
-              <FaCog className="settings-icon" onClick={toggleSettings}/>
+            <button 
+              className="settings-button" 
+              data-testid="settings-button"
+              onClick={toggleSettings}  // Move onClick to button
+            >
+              <FaCog className="settings-icon" />
             </button>
         </header>
         <div className="app-body-container">
@@ -603,11 +607,19 @@ function MainApp({onLogout, userInfo}) {
           )}
           <sidebar className="sidebar">
             <div className="friends-header">
-              <button className="manage-friend-container" onClick={toggleManageFriends}>
+              <button 
+                className="manage-friend-container" 
+                data-testid="manage-friends-button"
+                onClick={toggleManageFriends}
+              >
                 <FaMinus className="manage-friend-icon" />
               </button>
               <h1 className="sidebar-title">Friends</h1>
-              <button className="add-friend-container" onClick={toggleAddFriend}>
+              <button 
+                className="add-friend-container" 
+                data-testid="add-friend-button"
+                onClick={toggleAddFriend}
+              >
                 <FaPlus className="add-friend-icon" />
               </button>
             </div>
@@ -647,8 +659,21 @@ function MainApp({onLogout, userInfo}) {
               )}
             </div>
               {currFriend?.username && <div className="message-input-container">
-                <input className="message-input" placeholder="Type a message..." value={currMessage} onChange={(e) => setCurrMessage(e.target.value)}/>
-                <button className="send-button" onClick={handleSendMessage}>Send</button>
+                <input 
+                  type="text"
+                  className="message-input"
+                  placeholder="Type a message..."
+                  value={currMessage}
+                  onChange={(e) => setCurrMessage(e.target.value)}
+                  data-testid="message-input"
+                />
+                <button 
+                  className="send-button" 
+                  onClick={handleSendMessage}
+                  data-testid="send-button"
+                >
+                  Send
+                </button>
               </div>}
           </div>
         </div>

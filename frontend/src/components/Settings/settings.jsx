@@ -292,6 +292,7 @@ function Settings({ userInfo }) {
                   type="button" 
                   onClick={() => setShowPassword(!showPassword)}
                   className="toggle-password"
+                  aria-label="Toggle password visibility"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -401,7 +402,6 @@ function Settings({ userInfo }) {
             <h3>Two-Factor Authentication</h3>
             <p className="twofa-description">
               Enable two-factor authentication to add an extra layer of security to your account.
-              When enabled, you'll need to provide a verification code sent to your email in addition to your password when logging in.
             </p>
             <div className="twofa-toggle">
               <span>Status: {twoFactorEnabled ? 'Enabled' : 'Disabled'}</span>

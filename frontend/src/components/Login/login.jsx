@@ -30,7 +30,6 @@ function Login({ onLogin }) {
 
             // Store user data
             const userData = response.data.user;
-            console.log('User data:', userData);
             localStorage.setItem('userData', JSON.stringify(userData));
 
             // Pass user data to main app
