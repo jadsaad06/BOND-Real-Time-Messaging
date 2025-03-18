@@ -73,32 +73,37 @@ router.get("/users", async (req, res) => {
 });
 
 // Search for users by username
-router.get("/users/search", async (req, res) => {
+router.get("/users/search", authMiddleware, async (req, res) => {
     try {
         const searchQuery = req.query.username;
-        const userId = req.query.userId; // Assuming the user's ID is added to req.user in authentication middleware
+        const userId = req.query.userId; 
 
         if (!searchQuery) {
             return res.status(400).json({ message: "Search query is required" });
         }
 
-        // Create a case-insensitive regex pattern that matches usernames starting with the search query
+        // Create a case-insensitive regex pattern
         const regex = new RegExp(`^${searchQuery}`, 'i');
 
-        // Find the current user to get the blocked list
-        const user = await User.findById(userId).select('blockedUsers');
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // Exclude blocked users from the search results
+        // Find users where:
+        // 1. Username matches the search query
+        // 2. Current user is not in their blockedUsers list
         const users = await User.find({
             username: regex,
-            _id: { $nin: user.blockedUsers } // Exclude users who are in the blockedUsers list
+            blockedUsers: { $nin: [userId] } // Find users who haven't blocked this user
         })
         .select("username email profilePicture")
-        .limit(10); // Limit results to 10 users
+        .limit(10);
+
+        // If you also want to filter out users that the current user has blocked:
+        const currentUser = await User.findById(userId).select('blockedUsers');
+        if (currentUser) {
+            // Filter out users that the current user has blocked
+            const filteredUsers = users.filter(user => 
+                !currentUser.blockedUsers.includes(user._id)
+            );
+            return res.status(200).json(filteredUsers);
+        }
 
         res.status(200).json(users);
     } catch (error) {
