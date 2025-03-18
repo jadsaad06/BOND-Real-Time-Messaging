@@ -122,7 +122,7 @@ router.get("/users/:id/friends", async (req, res) => {
 // GET authenticated user's profile
 router.get("/profile", authMiddleware, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select("-password"); // Exclude password from response
+        const user = await User.findById(req.user.userId).select("-password"); // Exclude password from response
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -138,7 +138,7 @@ router.patch("/friends/:friendId", authMiddleware, async (req, res) => {
     session.startTransaction();
 
     try {
-        const userId = req.query.userId; // Normalize to string
+        const userId = req.user.userId; // Normalize to string
         const { friendId } = req.params;
 
         // Validate friendId is a valid ObjectId
@@ -202,7 +202,7 @@ router.patch("/friends/:friendId", authMiddleware, async (req, res) => {
 // DELETE route to remove a friend
 router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
     try {
-        const userId = req.query.userId; // Get authenticated user's ID
+        const userId = req.user.userId; // Get authenticated user's ID
         const { friendId } = req.params;
 
         const user = await User.findById(userId);
