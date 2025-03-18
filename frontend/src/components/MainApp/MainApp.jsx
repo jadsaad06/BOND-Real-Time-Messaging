@@ -33,6 +33,37 @@ function MainApp({onLogout, userInfo}) {
     const [currFriend, setCurrFriend] = useState({}); // holds id, username, pfp
 
     useEffect(() => {
+      const handleUserBlocked = (event) => {
+        const blockedUserId = event.detail.blockedUserId;
+        // Remove blocked user from friends list if present
+        setFriends(friends.filter(friend => friend._id !== blockedUserId));
+        
+        // If current chat is with blocked user, clear it
+        if (currFriend._id === blockedUserId) {
+          setCurrFriend({});
+          setMessages([]);
+        }
+      };
+      
+      const handleUserUnblocked = (event) => {
+        // When a user is unblocked, refresh friends list
+        // They won't automatically be added back to friends
+        // But making sure our UI is consistent
+        getFriends();
+      };
+      
+      // Add event listeners
+      window.addEventListener('userBlocked', handleUserBlocked);
+      window.addEventListener('userUnblocked', handleUserUnblocked);
+      
+      // Clean up
+      return () => {
+        window.removeEventListener('userBlocked', handleUserBlocked);
+        window.removeEventListener('userUnblocked', handleUserUnblocked);
+      };
+    }, [friends, currFriend]);
+
+    useEffect(() => {
        getFriends();
     }, []);
 
@@ -118,8 +149,21 @@ function MainApp({onLogout, userInfo}) {
       }
     };
 
+
+
     const getFriends = async () => {
       try {
+        // First get blocked users
+        const blockedResponse = await axios.get(`http://localhost:5000/auth/users/${userInfo._id}/blocklist`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        const blockedUserIds = blockedResponse.data.map(user => user._id);
+        
+        // Get friends
         const response = await axios.get(`http://localhost:5000/auth/users/${userInfo._id}/friends`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -127,9 +171,14 @@ function MainApp({onLogout, userInfo}) {
           }
         });
     
+        // Filter out any blocked users that might still appear in friends list
+        const filteredFriends = response.data.filter(friend => 
+          !blockedUserIds.includes(friend._id)
+        );
+      
         // Fetch profile pictures for each friend
         const friendsWithPics = await Promise.all(
-          response.data.map(async (friend) => {
+          filteredFriends.map(async (friend) => {
             const profilePic = await fetchFriendProfilePicture(friend._id);
             return {
               ...friend,
@@ -268,28 +317,44 @@ function MainApp({onLogout, userInfo}) {
     const handleSendMessage = async () => {
       if (currMessage.trim() && currMessage.length <= 200) {
         try {
+          // First check if the user is blocked
+          const blockedResponse = await axios.get(`http://localhost:5000/auth/users/${userInfo._id}/blocklist`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          const blockedUsers = blockedResponse.data;
+          const isBlocked = blockedUsers.some(user => user._id === currFriend._id);
+          
+          if (isBlocked) {
+            alert("You cannot send messages to blocked users. Please unblock this user first.");
+            return;
+          }
+          
           const messageData = {
             sender: userInfo._id,
             receiver: currFriend._id,
             content: currMessage
           };
-
+    
           socket.emit('sendMessage', messageData);
-
+    
           setMessages((prevMessages) => [...prevMessages, { 
             text: currMessage, 
             type: 'sent',
             userID: userInfo._id
           }]);
           setCurrMessage('');
-
+    
           const response = await axios.post('http://localhost:5000/messages/send', messageData, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
               'Content-Type': 'application/json'
             }
           });
-
+    
         } catch (error) {
           console.error('Error sending message:', error.response?.data?.message || error.message);
         }
@@ -426,19 +491,38 @@ function MainApp({onLogout, userInfo}) {
   }
 };
   
-  const handleBlockUser = async (userId) => {
-    try {
-      axios.post(`http://localhost:5000/blockAUser`, { blockedId: userId }, {
+const handleBlockUser = async (userId) => {
+  try {
+    // Use the correct endpoint matching your blockedRoutes.js
+    const response = await axios.post(
+      `http://localhost:5000/auth/users/${userInfo._id}/block/${userId}`, 
+      {}, 
+      {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         }
-      })
+      }
+    );
+    
+    // If the user was blocked successfully
+    if (response.status === 200) {
+      // Remove the blocked user from friends list
+      setFriends(friends.filter(friend => friend._id !== userId));
+      
+      // If current chat is with blocked user, clear it
+      if (currFriend._id === userId) {
+        setCurrFriend({});
+        setMessages([]);
+      }
+      
       alert(`User blocked successfully!`);
-    } catch (error) {
-      console.error('Error blocking user:', error);
     }
-  };
+  } catch (error) {
+    console.error('Error blocking user:', error.response?.data?.message || error.message);
+    alert(`Failed to block user: ${error.response?.data?.message || 'Unknown error'}`);
+  }
+};
 
   const handleSelectFriend = async (friend) => {
     const profilePic = await fetchFriendProfilePicture(friend._id);

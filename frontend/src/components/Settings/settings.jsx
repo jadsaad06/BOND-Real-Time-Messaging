@@ -37,6 +37,8 @@ function Settings({ userInfo }) {
     }
   }, [showBlockList]);
 
+  
+
   const getBlockedUsers = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/auth/users/${userInfo._id}/blocklist`, {
@@ -172,6 +174,14 @@ function Settings({ userInfo }) {
       setBlockSearchResults([]);
       setBlockSearch('');
       
+      // You could emit an event here that MainApp listens to
+      // Or use a shared state management solution
+      // For now, you can create a custom event:
+      const blockEvent = new CustomEvent('userBlocked', { 
+        detail: { blockedUserId: userId } 
+      });
+      window.dispatchEvent(blockEvent);
+      
     } catch (error) {
       console.error('Error blocking user:', error.response?.data?.message || error.message);
     }
@@ -188,6 +198,12 @@ function Settings({ userInfo }) {
       
       // Update blocked users list
       setBlockedUsers(blockedUsers.filter(user => user._id !== userId));
+      
+      // Notify the app that a user was unblocked
+      const unblockEvent = new CustomEvent('userUnblocked', { 
+        detail: { unblockedUserId: userId } 
+      });
+      window.dispatchEvent(unblockEvent);
       
     } catch (error) {
       console.error('Error unblocking user:', error.response?.data?.message || error.message);
