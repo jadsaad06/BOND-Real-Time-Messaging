@@ -46,18 +46,23 @@ function MainApp({onLogout, userInfo}) {
       }
     }, [userInfo]);
 
-    useEffect(() => {
-      socket.on("receiveMessage", (data) => {
-        console.log("Received message via WebSocket:", data);
+  // Replace the existing socket useEffect with this updated version
+  useEffect(() => {
+    socket.on("receiveMessage", (data) => {
+      console.log("Received message via WebSocket:", data);
+      console.log("Current friend ID:", currFriend._id);
+      console.log("Sender ID:", data.sender);
+      if(currFriend._id && data.sender === currFriend._id.toString()){
         setMessages((prev) => [...prev, { 
           text: data.content.trim(), 
           type: 'received',
           userID: data.sender
         }]);
-      });
+      }
+    });
 
-      return () => socket.off("receiveMessage");
-    }, []);
+    return () => socket.off("receiveMessage");
+  }, [currFriend]); // Add currFriend as a dependency
 
     const getMessages = async () => {
       try {

@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: 'default_base64_image_string_here'
+        default: '/uploads/1742325620730.png'
     },
     createdAt: {
         type: Date,
