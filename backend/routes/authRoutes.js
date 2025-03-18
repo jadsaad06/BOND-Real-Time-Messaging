@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require("mongoose");
 const authMiddleware = require('../middleware/authMiddleware');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 
 // Route to register a new user
 router.post('/register', async (req, res) => {
@@ -232,6 +233,100 @@ router.delete("/friends/:friendId", authMiddleware, async (req, res) => {
         res.json({ message: "Friend removed successfully", friends: user.friends });
     } catch (error) {
         res.status(500).json({ message: "Error removing friend", error });
+    }
+});
+
+// Change Email Route
+router.put("/changeEmail", authenticateUser, async (req, res) => {
+    try {
+        const { newEmail } = req.body;
+
+        if (!newEmail) {
+            return res.status(400).json({ message: "New email is required" });
+        }
+
+        // Ensure the new email is not already taken by another user
+        const existingUser = await User.findOne({ email: newEmail });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email is already in use" });
+        }
+
+        // Update the email
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.email = newEmail;
+        await user.save();
+
+        res.status(200).json({ message: "Email updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error changing email", error });
+    }
+});
+
+// Change Username Route
+router.put("/changeUsername", authenticateUser, async (req, res) => {
+    try {
+        const { newUsername } = req.body;
+
+        if (!newUsername) {
+            return res.status(400).json({ message: "New username is required" });
+        }
+
+        // Ensure the new username is not already taken by another user
+        const existingUser = await User.findOne({ username: newUsername });
+        if (existingUser) {
+            return res.status(400).json({ message: "Username is already in use" });
+        }
+
+        // Update the username
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.username = newUsername;
+        await user.save();
+
+        res.status(200).json({ message: "Username updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error changing username", error });
+    }
+});
+
+router.put("/changePassword", authenticateUser, async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ message: "Both old and new passwords are required" });
+        }
+
+        const user = await User.findById(req.user.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if the old password matches
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Old password is incorrect" });
+        }
+
+        // Hash the new password before saving
+        const salt = await bcrypt.genSalt(10);  // Generate a salt
+        const hashedPassword = await bcrypt.hash(newPassword, salt);  // Hash the new password
+
+        // Update the password in the database
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error changing password", error });
     }
 });
 
