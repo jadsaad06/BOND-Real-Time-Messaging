@@ -1,70 +1,150 @@
-# Getting Started with Create React App
+# BOND Real-Time Messaging Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React-based messaging application featuring real-time chat, friend management, and user customization.
+
+## Features
+
+- **Real-time Messaging**
+  - Instant message delivery
+  - Typing indicators
+  - Message history
+  - Profile pictures in chat
+
+- **Friend Management**
+  - Add/Remove friends
+  - Block users
+  - Search functionality
+  - Friend status indicators
+
+- **User Settings**
+  - Profile customization
+  - Two-factor authentication
+  - Email/Password management
+  - Theme settings
+
+## Prerequisites
+
+- Node.js >= 16.x
+- npm >= 7.x
+- Backend server running on port 5000
+
+## Quick Start
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start development server:
+```bash
+npm start
+```
+
+3. Run tests:
+```bash
+npm test
+```
+
+## Project Structure
+
+```
+frontend/
+├── public/              # Static files
+├── src/
+│   ├── components/     # React components
+│   │   ├── Login/     # Authentication
+│   │   ├── MainApp/   # Main application
+│   │   └── Settings/  # User settings
+│   │   └── Register/  # User registration
+│   ├── tests/         # Test files
+├── package.json
+└── README.md
+```
+
+## Key Components
+
+### Authentication
+- Login with email/password
+- Registration system
+- Two-factor authentication
+- Password recovery
+
+### Main Application
+- Real-time chat interface
+- Friend management
+- Profile customization
+- Settings management
+
+### Settings
+- Profile picture upload
+- Password change
+- Email management
+- Two-factor authentication toggle
+- Block list management
+
+## Testing
+
+The project uses Jest and React Testing Library for testing. Run tests with:
+
+```bash
+npm test
+```
+
+Key test files:
+- `Login.test.jsx`
+- `MainApp.test.jsx`
+- `Settings.test.jsx`
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm start` - Run development server
+- `npm test` - Run test suite
+- `npm run build` - Create production build
+- `npm run eject` - Eject from Create React App
 
-### `npm start`
+## Environment Variables
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Create a `.env` file in the project root:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```env
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_SOCKET_URL=http://localhost:5000
+```
 
-### `npm test`
+## Dependencies
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Key dependencies:
+- React 18
+- Socket.io-client
+- Axios
+- React Router DOM
+- React Icons
+- Jest
+- Testing Library
 
-### `npm run build`
+## Development Guidelines
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Follow the existing component structure
+2. Write tests for new features
+3. Use functional components with hooks
+4. Follow ESLint rules
+5. Add proper TypeScript types
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Browser Support
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Chrome (latest)
+- Firefox (latest)
+- Edge (latest)
+- Safari (latest)
 
-### `npm run eject`
+## Contributing
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/name`)
+3. Commit changes (`git commit -am 'Add feature'`)
+4. Push to branch (`git push origin feature/name`)
+5. Open a Pull Request
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## License
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT License - See LICENSE file for details
